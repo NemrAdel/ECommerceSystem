@@ -1,4 +1,7 @@
 
+using ECommerce.Api.Extensions;
+using ECommerce.Doamin.Contracts;
+using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,10 +25,13 @@ namespace ECommerce.Api
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.AddScoped<IDataSeed, DataSeeding>();
             #endregion
 
             var app = builder.Build();
-
+            //app.MigrateDataBase();
+            app.SeedData();
             #region PipLine [MidleWares]
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
