@@ -20,27 +20,27 @@ namespace ECommerce.Presistence.Data.DataSeed
         {
             _dbContext = dbContext;
         }
-        public void Initialize()
+        public async Task InitializeAsync()
         {
             try
             {
-                var HasProduct = _dbContext.Products.Any();
-                var HasProductBrand = _dbContext.ProductBrands.Any();
-                var HasProductType = _dbContext.ProductTypes.Any();
+                var HasProduct =await _dbContext.Products.AnyAsync();
+                var HasProductBrand = await _dbContext.ProductBrands.AnyAsync();
+                var HasProductType =await _dbContext.ProductTypes.AnyAsync();
                 if (HasProduct && HasProductBrand && HasProductType)
                     return;
                 if (!HasProductBrand)
                 {
-                    SeedDataFromJson<ProductBrand, int>("brands.json", _dbContext.ProductBrands);
+                    await SeedDataFromJson<ProductBrand, int>("brands.json", _dbContext.ProductBrands);
                 }
                 if (!HasProductType)
                 {
-                    SeedDataFromJson<ProductType, int>("types.json", _dbContext.ProductTypes);
+                    await SeedDataFromJson<ProductType, int>("types.json", _dbContext.ProductTypes);
                 }
                 _dbContext.SaveChanges();
                 if (!HasProduct)
                 {
-                    SeedDataFromJson<Product, int>("product.json", _dbContext.Products);
+                    await SeedDataFromJson<Product, int>("product.json", _dbContext.Products);
                     _dbContext.SaveChanges();
                 }
             }
@@ -49,7 +49,7 @@ namespace ECommerce.Presistence.Data.DataSeed
                 Console.WriteLine($"Error in DataSeeding {err}");
             }
         }
-        private void SeedDataFromJson<Tkey, T>(string fileName, DbSet<Tkey> dbset) where Tkey : BaseEntity<T>
+        private async Task SeedDataFromJson<Tkey, T>(string fileName, DbSet<Tkey> dbset) where Tkey : BaseEntity<T>
         {
             var filePath = @"..\ECommerce.Presistence\Data\DataSeed\Data\" + fileName;
             if (!File.Exists(filePath))
@@ -59,13 +59,13 @@ namespace ECommerce.Presistence.Data.DataSeed
             {
                 //var data=File.ReadAllText(filePath);
                 var dataStream=File.OpenRead(filePath);
-                var data = JsonSerializer.Deserialize<List<Tkey>>(dataStream,new JsonSerializerOptions
+                var data = await JsonSerializer.DeserializeAsync<List<Tkey>>(dataStream,new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
                 if(data is not null)
                 {
-                    dbset.AddRange(data);
+                    await dbset.AddRangeAsync(data);
                 }
             }
             catch (Exception ex)

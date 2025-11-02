@@ -9,7 +9,7 @@ namespace ECommerce.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +30,8 @@ namespace ECommerce.Api
             #endregion
 
             var app = builder.Build();
-            //app.MigrateDataBase();
-            app.SeedData();
+            await app.MigrateDataBase();
+            await app.SeedData();
             #region PipLine [MidleWares]
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -46,7 +46,7 @@ namespace ECommerce.Api
 
             app.MapControllers();
 
-            app.Run(); 
+            await app.RunAsync(); 
             #endregion
         }
     }
