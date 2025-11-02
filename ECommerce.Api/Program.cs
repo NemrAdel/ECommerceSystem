@@ -1,8 +1,13 @@
 
+using AutoMapper;
 using ECommerce.Api.Extensions;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
+using ECommerce.Presistence.Repositories;
+using ECommerce.Service;
+using ECommerce.Service.MappingProfiles;
+using ECommerce.Services.Abstraction;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Api
@@ -27,6 +32,10 @@ namespace ECommerce.Api
             });
 
             builder.Services.AddScoped<IDataSeed, DataSeeding>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            //builder.Services.AddScoped<IMapper, Mapper>();
+            builder.Services.AddAutoMapper(x=>x.AddProfile<ProductProfile>());
             #endregion
 
             var app = builder.Build();
