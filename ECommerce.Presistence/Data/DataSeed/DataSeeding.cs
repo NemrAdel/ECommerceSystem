@@ -40,7 +40,7 @@ namespace ECommerce.Presistence.Data.DataSeed
                 _dbContext.SaveChanges();
                 if (!HasProduct)
                 {
-                    await SeedDataFromJson<Product, int>("product.json", _dbContext.Products);
+                    await SeedDataFromJson<Product, int>("products.json", _dbContext.Products);
                     _dbContext.SaveChanges();
                 }
             }
@@ -51,7 +51,7 @@ namespace ECommerce.Presistence.Data.DataSeed
         }
         private async Task SeedDataFromJson<Tkey, T>(string fileName, DbSet<Tkey> dbset) where Tkey : BaseEntity<T>
         {
-            var filePath = @"..\ECommerce.Presistence\Data\DataSeed\Data\" + fileName;
+            var filePath = @"..\ECommerce.Presistence\Data\DataSeed\JsonFiles\" + fileName;
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Json file not found", filePath);
 

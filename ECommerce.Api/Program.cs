@@ -23,7 +23,7 @@ namespace ECommerce.Api
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi(); 
+            //builder.Services.AddOpenApi(); 
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -45,7 +45,10 @@ namespace ECommerce.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                //app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
             }
 
             app.UseHttpsRedirection();

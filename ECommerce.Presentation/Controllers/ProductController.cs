@@ -11,22 +11,23 @@ namespace ECommerce.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController:ControllerBase
+    public class ProductController:ControllerBase
     {
         private readonly IProductService _productService;
 
-        public ProductsController(IProductService productService)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+        [HttpGet("GetAllProduct")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProduct()
         {
             var products = await  _productService.GetAllProductAsync();
+            Console.WriteLine($"///////////////////////////////////{products}");
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetProductById/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
@@ -42,6 +43,7 @@ namespace ECommerce.Presentation.Controllers
             return Ok(brands);
         }
 
+        [HttpGet("Types")]
         public async Task<ActionResult<IEnumerable<TypeDTO>>> GetAllTypes()
         {
             var types = await _productService.GetAllTypeAsync();
