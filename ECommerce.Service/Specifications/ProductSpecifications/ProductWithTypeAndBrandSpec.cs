@@ -13,8 +13,8 @@ namespace ECommerce.Service.Specifications.ProductSpecifications
         //1- brandId is not null && p=>p.BrandID=brandId
         //2- typeId is not null && p=>p.typeID=typeId
         //3- the two together
-        public ProductWithTypeAndBrandSpec(int? brandId,int? typeId):base(p=>(!brandId.HasValue)||(p.ProductBrandId==brandId.Value)
-        &&(!typeId.HasValue)||(p.ProductTypeId==typeId.Value))
+        public ProductWithTypeAndBrandSpec(int? brandId,int? typeId):base(p=>((!brandId.HasValue)||(p.ProductBrandId==brandId.Value))
+        &&((!typeId.HasValue)||(p.ProductTypeId==typeId.Value)))
         {
             AddInclude(p => p.ProductBrand);
             AddInclude(p => p.ProductType);
