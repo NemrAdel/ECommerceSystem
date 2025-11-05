@@ -29,13 +29,26 @@ namespace ECommerce.Presistence.Repositories
             _dbContext.Set<Tentity>().Remove(entity);
         }
 
-        public async Task<IEnumerable<Tentity>> GetAllAsync(Expression<Func<Tentity,bool>>? condition=default)
+        public async Task<IEnumerable<Tentity>> GetAllAsync()
         {
-            if (condition is not null)
-            {
-                return await _dbContext.Set<Tentity>().Where(condition).ToListAsync();
-            }
             return await _dbContext.Set<Tentity>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<Tentity>> GetAllAsync(ISpecifications<Tentity, Tkey> specifications)
+        {
+            IQueryable<Tentity> query = _dbContext.Set<Tentity>();
+            if(specifications is not null)
+            {
+                if(specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Any())
+                {
+                    foreach (var includeExpression in specifications.IncludeExpressions)
+                    {
+                        query = query.Include(includeExpression);
+                    }
+                }
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Tentity?> GetByIdAsync(Tkey id)
