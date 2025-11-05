@@ -15,10 +15,12 @@ namespace ECommerce.Service.MappingProfiles
         {
             CreateMap<ProductBrand, BrandDTO>();
             CreateMap<Product, ProductDTO>()
-                .ForMember(dest=>dest.ProductBrand,opt=>
-                opt.MapFrom(src=>src.ProductBrand.Name))
-                .ForMember(dest=>dest.ProductType,opt=>
-                opt.MapFrom(src=>src.ProductType.Name));
+                .ForMember(dest => dest.ProductBrand, opt =>
+                opt.MapFrom(src => src.ProductBrand.Name))
+                .ForMember(dest => dest.ProductType, opt =>
+                opt.MapFrom(src => src.ProductType.Name))
+                .ForMember(dest => dest.PictureUrl, opt =>
+                opt.MapFrom<ProductPictureurlResolver>());
 
             CreateMap<ProductType, TypeDTO>();
         }
