@@ -36,18 +36,7 @@ namespace ECommerce.Presistence.Repositories
 
         public async Task<IEnumerable<Tentity>> GetAllAsync(ISpecifications<Tentity, Tkey> specifications)
         {
-            IQueryable<Tentity> query = _dbContext.Set<Tentity>();
-            if(specifications is not null)
-            {
-                if(specifications.IncludeExpressions is not null && specifications.IncludeExpressions.Any())
-                {
-                    foreach (var includeExpression in specifications.IncludeExpressions)
-                    {
-                        query = query.Include(includeExpression);
-                    }
-                }
-            }
-
+            var query= SpecificationEvaluator.CreateQuery(_dbContext.Set<Tentity>(), specifications);
             return await query.ToListAsync();
         }
 
