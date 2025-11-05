@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,8 +29,12 @@ namespace ECommerce.Presistence.Repositories
             _dbContext.Set<Tentity>().Remove(entity);
         }
 
-        public async Task<IEnumerable<Tentity>> GetAllAsync()
+        public async Task<IEnumerable<Tentity>> GetAllAsync(Expression<Func<Tentity,bool>>? condition=default)
         {
+            if (condition is not null)
+            {
+                return await _dbContext.Set<Tentity>().Where(condition).ToListAsync();
+            }
             return await _dbContext.Set<Tentity>().ToListAsync();
         }
 

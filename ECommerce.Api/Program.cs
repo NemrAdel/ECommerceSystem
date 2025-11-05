@@ -34,14 +34,17 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IDataSeed, DataSeeding>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddTransient<ProductPictureurlResolver>();
             //builder.Services.AddScoped<IMapper, Mapper>();
-            builder.Services.AddAutoMapper(x=>x.AddProfile<ProductProfile>());
+            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
             #endregion
 
             var app = builder.Build();
             await app.MigrateDataBase();
             await app.SeedData();
             #region PipLine [MidleWares]
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -50,7 +53,7 @@ namespace ECommerce.Api
                 app.UseSwaggerUI();
 
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
