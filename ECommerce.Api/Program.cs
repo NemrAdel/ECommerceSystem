@@ -1,9 +1,20 @@
 
+using AutoMapper;
+using ECommerce.Api.Extensions;
+using ECommerce.Doamin.Contracts;
+using ECommerce.Presistence.Data.DataSeed;
+using ECommerce.Presistence.Data.DbContexts;
+using ECommerce.Presistence.Repositories;
+using ECommerce.Service;
+using ECommerce.Service.MappingProfiles;
+using ECommerce.Services.Abstraction;
+using Microsoft.EntityFrameworkCore;
+
 namespace ECommerce.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -12,18 +23,37 @@ namespace ECommerce.Api
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi(); 
+            //builder.Services.AddOpenApi(); 
+            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<StoreDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            builder.Services.AddScoped<IDataSeed, DataSeeding>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddTransient<ProductPictureurlResolver>();
+            //builder.Services.AddScoped<IMapper, Mapper>();
+            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
             #endregion
 
             var app = builder.Build();
-
+            await app.MigrateDataBase();
+            await app.SeedData();
             #region PipLine [MidleWares]
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
-            }
+                //app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
 
+            }
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
@@ -31,7 +61,7 @@ namespace ECommerce.Api
 
             app.MapControllers();
 
-            app.Run(); 
+            await app.RunAsync(); 
             #endregion
         }
     }
