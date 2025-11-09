@@ -15,11 +15,21 @@ namespace ECommerce.Service.Specifications.ProductSpecifications
         //2- typeId is not null && p=>p.typeID=typeId
         //3- the two together
         public ProductWithTypeAndBrandSpec(ProductQueryParams queryParams)
-            :base(p=>((!queryParams.brandId.HasValue)||(p.ProductBrandId==queryParams.brandId.Value))
-            &&((!queryParams.typeId.HasValue)||(p.ProductTypeId==queryParams.typeId.Value))
-            &&((string.IsNullOrEmpty(queryParams.search))||(p.Name.ToLower().Contains(queryParams.search.ToLower())))
+    :   base( p =>
+        (
+            (!queryParams.brandId.HasValue) || (p.ProductBrandId == queryParams.brandId.Value)
+        )
+        &&
+        (
+            (!queryParams.typeId.HasValue) || (p.ProductTypeId == queryParams.typeId.Value)
+        )
+        &&
+        (
+            (string.IsNullOrEmpty(queryParams.search)) || (p.Name.ToLower().Contains(queryParams.search.ToLower()))
+        )
 
-            )
+        )
+        
         {
             AddInclude(p => p.ProductBrand);
             AddInclude(p => p.ProductType);
