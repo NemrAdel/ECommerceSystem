@@ -52,5 +52,7 @@ namespace ECommerce.Service
             var product =await  _unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
             return _mapper.Map<ProductDTO>(product);
         }
+
+
     }
 }
