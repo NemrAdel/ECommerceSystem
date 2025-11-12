@@ -15,6 +15,10 @@ namespace ECommerce.Service.Specifications
 
         public Expression<Func<Tentity, bool>> Criteria { get; }
 
+        public Expression<Func<Tentity, object>>? OrderBy { private set; get; }
+
+        public Expression<Func<Tentity, object>>? OrderByDesc { private set; get; }
+
         protected BaseSpecifications(Expression<Func<Tentity, bool>> criteria)
         {
             Criteria = criteria;
@@ -26,5 +30,13 @@ namespace ECommerce.Service.Specifications
             IncludeExpressions.Add(includeExpression);
         }
 
+        protected void AddOrderBy(Expression<Func<Tentity, object>> orderByExpression)
+        {
+            OrderBy = orderByExpression;
+        }
+        protected void AddOrderByDesc(Expression<Func<Tentity, object>> orderByDescExpression)
+        {
+            OrderByDesc = orderByDescExpression;
+        }
     }
 }
