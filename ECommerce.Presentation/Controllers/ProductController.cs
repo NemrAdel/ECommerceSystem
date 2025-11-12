@@ -21,7 +21,7 @@ namespace ECommerce.Presentation.Controllers
             _productService = productService;
         }
         [HttpGet("GetAllProduct")]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern
+        public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern
         {
             var products = await  _productService.GetAllProductAsync(queryParams);
             return Ok(products);
