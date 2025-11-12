@@ -31,12 +31,13 @@ namespace ECommerce.Service
 
         public async Task<PaginatedResult<ProductDTO>> GetAllProductAsync(ProductQueryParams queryParams)
         {
+            var repo= _unitOfWork.GetRepository<Product,int>();
             // get all products with their types and brands
             var spec=new ProductWithTypeAndBrandSpec(queryParams);
-            var products = await _unitOfWork.GetRepository<Product,int>().GetAllAsync(spec);
+            var products = await repo.GetAllAsync(spec);
             var DataToReturn = _mapper.Map<IEnumerable<ProductDTO>>(products);
             var CountOfReturnDate = DataToReturn.Count();
-            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,0,Data);
+            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,0,DataToReturn);
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypeAsync()
