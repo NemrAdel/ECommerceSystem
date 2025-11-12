@@ -46,8 +46,8 @@ namespace ECommerce.Service.Specifications
         protected void ApplyPagination(int pageSize, int pageIndex)
         {
             IsPaginated = true;
-            Skip = (pageSize - 1) * pageSize;
-            Take = pageIndex;
+            Skip = (pageIndex - 1) * pageSize;
+            Take = pageSize;
         }
         // 12 Products => page size = 3 ,
         // skip = 6 and take = 3
