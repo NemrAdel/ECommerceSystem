@@ -36,7 +36,7 @@ namespace ECommerce.Service
             var products = await _unitOfWork.GetRepository<Product,int>().GetAllAsync(spec);
             var DataToReturn = _mapper.Map<IEnumerable<ProductDTO>>(products);
             var CountOfReturnDate = DataToReturn.Count();
-            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,0,DataToReturn);
+            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,0,Data);
         }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypeAsync()
