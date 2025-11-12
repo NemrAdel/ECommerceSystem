@@ -6,29 +6,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ECommerce.Presistence.Repositories
 {
     public class BasketRepository : IBasketRepository
     {
+        private readonly IDatabase _database;
         public BasketRepository(IConnectionMultiplexer connection)
         {
+            _database = connection.GetDatabase();
+        }
+        public async Task<CostumerBasket> CreateOrUpdateBasketAsync(CostumerBasket basket, TimeSpan timeToLive = default)
+        {
+            var jsonBasket=JsonSerializer.Serialize(basket);
+            var isCreatingOrUpdateing = await _database.StringSetAsync
+                (basket.Id, jsonBasket, (timeToLive == default) ? TimeSpan.FromDays(7) : timeToLive);
+            if (isCreatingOrUpdateing)
+            {
+                var BasketReturned = await _database.StringGetAsync(basket.Id);
+                return JsonSerializer.Deserialize<CostumerBasket>(BasketReturned!);
+            }
+            else
+                return null;
             
         }
-        public Task<CostumerBasket> CreateOrUpdateBasketAsync(CostumerBasket basket, TimeSpan timeToLive = default)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task DeleteBasketAsync(string basketId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task DeleteBasketAsync(string basketId)=>
+            await _database.KeyDeleteAsync(basketId);
+        
 
-        public Task<CostumerBasket?> GetBasketAsync(string basketId)
+        public async Task<CostumerBasket?> GetBasketAsync(string basketId)
         {
-            throw new NotImplementedException();
+            var basket= await _database.StringGetAsync(basketId);
+            if (basket.IsNullOrEmpty)
+                return null;
+            else
+                return JsonSerializer.Deserialize<CostumerBasket>(basket!);
         }
     }
 }
