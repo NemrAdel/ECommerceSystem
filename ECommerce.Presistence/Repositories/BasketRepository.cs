@@ -23,13 +23,8 @@ namespace ECommerce.Presistence.Repositories
             var jsonBasket=JsonSerializer.Serialize(basket);
             var isCreatingOrUpdateing = await _database.StringSetAsync
                 (basket.Id, jsonBasket, (timeToLive == default) ? TimeSpan.FromDays(7) : timeToLive);
-            if (isCreatingOrUpdateing)
-            {
-                var BasketReturned = await _database.StringGetAsync(basket.Id);
-                return JsonSerializer.Deserialize<CostumerBasket>(BasketReturned!);
-            }
-            else
-                return null;
+
+            return await GetBasketAsync(basket.Id);
             
         }
 
