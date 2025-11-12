@@ -28,9 +28,12 @@ namespace ECommerce.Service
             return _mapper.Map<BasketDTO>(createdOrUpdatedBasket);
         }
 
-        public async Task<bool> DeleteBasketAsync(string basketId)=>
-            await _basketRepository.DeleteBasketAsync(basketId);
-        
+        public async Task<bool> DeleteBasketAsync(string basketId)
+        {
+            return await _basketRepository.DeleteBasketAsync(basketId);
+            
+
+        }
 
         public Task<BasketDTO?> GetBasketAsync(string basketId)
         {
