@@ -29,9 +29,11 @@ namespace ECommerce.Service
             // get all products with their types and brands
             var spec=new ProductWithTypeAndBrandSpec(queryParams);
             var products = await repo.GetAllAsync(spec);
+            var productCountAsync= new ProductWithCountSpecifications(queryParams);
+            var totalCount=await repo.CountAsync(productCountAsync);
             var DataToReturn = _mapper.Map<IEnumerable<ProductDTO>>(products);
             var CountOfReturnDate = DataToReturn.Count();
-            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,CountOfReturnDate,DataToReturn);
+            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,totalCount,DataToReturn);
         }
         public async Task<IEnumerable<BrandDTO>> GetAllBrandAsync()
         {

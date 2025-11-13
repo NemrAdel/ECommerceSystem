@@ -11,7 +11,7 @@ namespace ECommerce.Service.Specifications.ProductSpecifications
 {
     public class ProductWithCountSpecifications : BaseSpecifications<Product, int>
     {
-        ProductWithCountSpecifications(ProductQueryParams queryParams)
+        public ProductWithCountSpecifications(ProductQueryParams queryParams)
             : base(ProductSpecificationsHelper.GetCriteria(queryParams))
         {
 
