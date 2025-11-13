@@ -20,6 +20,7 @@ namespace ECommerce.Service.Specifications.ProductSpecifications
         {
             AddInclude(p => p.ProductBrand);
             AddInclude(p => p.ProductType);
+
             switch (queryParams.sort)
             {
                 case ProductSortingOptions.PriceAsc:

@@ -30,7 +30,8 @@ namespace ECommerce.Service
 
         public async Task<bool> DeleteBasketAsync(string basketId)
         {
-            return await _basketRepository.DeleteBasketAsync(basketId);
+            //return await _basketRepository.DeleteBasketAsync(basketId);
+            return true;
             
 
         }
