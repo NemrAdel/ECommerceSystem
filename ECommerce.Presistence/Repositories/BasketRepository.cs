@@ -18,17 +18,27 @@ namespace ECommerce.Presistence.Repositories
         {
             _database = connection.GetDatabase();
         }
+
+
         public async Task<CostumerBasket> CreateOrUpdateBasketAsync(CostumerBasket basket, TimeSpan timeToLive = default)
         {
-            var jsonBasket=JsonSerializer.Serialize(basket);
+            var jsonBasket = JsonSerializer.Serialize(basket);
             var isCreatingOrUpdateing = await _database.StringSetAsync
                 (basket.Id, jsonBasket, (timeToLive == default) ? TimeSpan.FromDays(7) : timeToLive);
 
-            return await GetBasketAsync(basket.Id);
-            
+            if (isCreatingOrUpdateing)
+            {
+                var BasketReturned= await _database.StringGetAsync(basket.Id);
+                return JsonSerializer.Deserialize<CostumerBasket>(BasketReturned!)!;
+            }
+            else
+            {
+                return null;
+
+            }
         }
 
-        public async Task DeleteBasketAsync(string basketId)=>
+        public async Task<bool> DeleteBasketAsync(string basketId)=>
             await _database.KeyDeleteAsync(basketId);
         
 
