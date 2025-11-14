@@ -13,5 +13,15 @@ namespace ECommerce.Doamin.Contracts
         ICollection<Expression<Func<Tentitiy,object>>> IncludeExpressions { get; } 
 
         Expression<Func<Tentitiy,bool>> Criteria { get; }
-    }
+
+        Expression<Func<Tentitiy,object>>? OrderBy { get; }
+
+        Expression<Func<Tentitiy,object>>? OrderByDesc { get; }
+
+        int Skip { get; }
+
+        int Take { get; }
+
+        bool IsPaginated { get; }
+        }
 }

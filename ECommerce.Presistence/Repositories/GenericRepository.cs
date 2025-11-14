@@ -24,6 +24,12 @@ namespace ECommerce.Presistence.Repositories
           await _dbContext.Set<Tentity>().AddAsync(entity);
         }
 
+        public async Task<int> CountAsync(ISpecifications<Tentity, Tkey> specifications)
+        {
+            return await SpecificationEvaluator.CreateQuery(_dbContext.Set<Tentity>(), specifications)
+                .CountAsync();
+        }
+
         public void Delete(Tentity entity)
         {
             _dbContext.Set<Tentity>().Remove(entity);

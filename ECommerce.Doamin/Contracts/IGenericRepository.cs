@@ -18,5 +18,7 @@ namespace ECommerce.Doamin.Contracts
         void Update(Tentity entity);
         void Delete(Tentity entity);
 
+        Task<int> CountAsync(ISpecifications<Tentity,TKey> specifications );
+
     }
 }

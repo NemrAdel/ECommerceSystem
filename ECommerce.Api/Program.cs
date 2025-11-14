@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using ECommerce.Api.Extensions;
 using ECommerce.Doamin.Contracts;
@@ -9,6 +8,7 @@ using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace ECommerce.Api
 {
@@ -38,6 +38,11 @@ namespace ECommerce.Api
             builder.Services.AddTransient<ProductPictureurlResolver>();
             //builder.Services.AddScoped<IMapper, Mapper>();
             builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);
+            });
             #endregion
 
             var app = builder.Build();

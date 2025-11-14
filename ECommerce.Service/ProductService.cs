@@ -23,19 +23,24 @@ namespace ECommerce.Service
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        public async Task<PaginatedResult<ProductDTO>> GetAllProductAsync(ProductQueryParams queryParams)
+        {
+            var repo= _unitOfWork.GetRepository<Product,int>();
+            // get all products with their types and brands
+            var spec=new ProductWithTypeAndBrandSpec(queryParams);
+            var products = await repo.GetAllAsync(spec);
+            var productCountAsync= new ProductWithCountSpecifications(queryParams);
+            var totalCount=await repo.CountAsync(productCountAsync);
+            var DataToReturn = _mapper.Map<IEnumerable<ProductDTO>>(products);
+            var CountOfReturnDate = DataToReturn.Count();
+            return new PaginatedResult<ProductDTO>(queryParams.PageIndex,CountOfReturnDate,totalCount,DataToReturn);
+        }
         public async Task<IEnumerable<BrandDTO>> GetAllBrandAsync()
         {
             var Brands = await _unitOfWork.GetRepository<ProductBrand,int>().GetAllAsync();
             return _mapper.Map<IEnumerable<BrandDTO>>(Brands);
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductAsync(ProductQueryParams queryParams)
-        {
-            // get all products with their types and brands
-            var spec=new ProductWithTypeAndBrandSpec(queryParams);
-            var products = await _unitOfWork.GetRepository<Product,int>().GetAllAsync(spec);
-            return _mapper.Map<IEnumerable<ProductDTO>>(products);
-        }
 
         public async Task<IEnumerable<TypeDTO>> GetAllTypeAsync()
         {
@@ -49,5 +54,7 @@ namespace ECommerce.Service
             var product =await  _unitOfWork.GetRepository<Product, int>().GetByIdAsync(spec);
             return _mapper.Map<ProductDTO>(product);
         }
+
+
     }
 }
