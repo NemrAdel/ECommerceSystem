@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.Service.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce.Api.CustomeMiddleWares
 {
@@ -35,16 +36,21 @@ namespace ECommerce.Api.CustomeMiddleWares
             catch (Exception ex) 
             {
                 //logging 
-                _logger.LogError(ex,"Something Went Wrong."); // interface from microsoft 
+                _logger.LogError(ex,"Something Went Wrong.see here ---------------------------"); // interface from microsoft 
                 // my own return error response
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                //httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError; old way for all status code 500 but now we fix it
                 var problem = new ProblemDetails()
                 {
                     Title="An unexpected error occured",
-                    Status=StatusCodes.Status500InternalServerError,
                     Detail=ex.Message,
                     Instance=httpContext.Request.Path,
+                    Status=ex switch
+                    {
+                        NotFoundExceptions=>StatusCodes.Status404NotFound,
+                        _=>StatusCodes.Status500InternalServerError
+                    }
                 };
+                httpContext.Response.StatusCode = problem.Status.Value;
                 await httpContext.Response.WriteAsJsonAsync(problem);
             }
         }
