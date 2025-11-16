@@ -24,7 +24,10 @@ namespace ECommerce.Service
 
         public async Task SetAsync(string cacheKey, object cacheValue, TimeSpan timeToLive)
         {
-            var value=JsonSerializer.Serialize(cacheValue);
+            var value=JsonSerializer.Serialize(cacheValue,new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy=JsonNamingPolicy.CamelCase,
+            } );   // for camal case when return in cache memory
             await _cacherepository.SetAsync(cacheKey, value, timeToLive);
         }
     }

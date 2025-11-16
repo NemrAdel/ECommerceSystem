@@ -1,4 +1,5 @@
 using AutoMapper;
+using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Presistence.Data.DataSeed;
@@ -63,11 +64,13 @@ namespace ECommerce.Api
             var app = builder.Build();
             await app.MigrateDataBase();
             await app.SeedData();
+
             #region PipLine [MidleWares]
 
             
 
             // Configure the HTTP request pipeline.
+            app.UseMiddleware<ExceptionHandlerMiddleWare>();
             if (app.Environment.IsDevelopment())
             {
                 //app.MapOpenApi();

@@ -32,10 +32,10 @@ namespace ECommerce.Presentation.Controllers
         [HttpGet("GetProductById/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-                return NotFound();
-            return Ok(product);
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product is null)
+                    return NotFound("Product Not Found");
+                return Ok(product);
         }
 
         [HttpGet("brands")]
