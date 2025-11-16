@@ -34,7 +34,15 @@ namespace ECommerce.Presentation.Controllers
         {
                 var product = await _productService.GetProductByIdAsync(id);
                 if (product is null)
-                    return NotFound("Product Not Found");
+                    {
+
+                        return NotFound(new ProblemDetails()
+                        {
+                            Title="Not Found",
+                            Detail=$"object with id {id} not found",
+                            Instance=HttpContext.Request.Path,
+                        });
+                    }
                 return Ok(product);
         }
 

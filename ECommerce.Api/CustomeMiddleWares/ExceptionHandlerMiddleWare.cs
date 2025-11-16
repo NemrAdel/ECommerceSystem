@@ -18,6 +18,19 @@ namespace ECommerce.Api.CustomeMiddleWares
             try
             {
                 await _next.Invoke(httpContext);
+                if (httpContext.Response.StatusCode == StatusCodes.Status404NotFound)
+                {
+                    var problem = new ProblemDetails()
+                    {
+                        Title="Error While Processing Http Request. - EndPoint not found",
+                        Status=StatusCodes.Status404NotFound,
+                        Detail=$"Endpoint {httpContext.Request.Path} Not Found",
+                        Instance=httpContext.Request.Path,
+                    };
+
+                    await httpContext.Response.WriteAsJsonAsync(problem);
+                }
+
             }
             catch (Exception ex) 
             {
