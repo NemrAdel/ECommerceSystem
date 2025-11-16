@@ -43,6 +43,10 @@ namespace ECommerce.Api
             {
                 return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);
             });
+
+            builder.Services.AddScoped<IBasketService,BasketService>();
+            builder.Services.AddScoped<ICacheRepository,CacheRepository>();
+            builder.Services.AddScoped<ICacheService,CacheService>();
             #endregion
 
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
