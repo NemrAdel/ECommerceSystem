@@ -45,11 +45,23 @@ namespace ECommerce.Api
             });
             #endregion
 
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
             var app = builder.Build();
             await app.MigrateDataBase();
             await app.SeedData();
             #region PipLine [MidleWares]
 
+            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -61,7 +73,7 @@ namespace ECommerce.Api
             }
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
 
 
