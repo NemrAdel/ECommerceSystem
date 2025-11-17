@@ -11,6 +11,11 @@ namespace ECommerce.Service.Specifications
 {
     public abstract class BaseSpecifications<Tentity, Tkey> : ISpecifications<Tentity, Tkey> where Tentity : BaseEntity<Tkey>
     {
+
+        protected BaseSpecifications(Expression<Func<Tentity, bool>> criteria)
+        {
+            Criteria = criteria;
+        }
         public ICollection<Expression<Func<Tentity, object>>> IncludeExpressions { get; } = [];
 
         public Expression<Func<Tentity, bool>> Criteria { get; }
@@ -33,10 +38,7 @@ namespace ECommerce.Service.Specifications
         }
 
 
-        protected BaseSpecifications(Expression<Func<Tentity, bool>> criteria)
-        {
-            Criteria = criteria;
-        }
+
         public int Skip { private set; get; }
 
         public int Take { private set; get; }
