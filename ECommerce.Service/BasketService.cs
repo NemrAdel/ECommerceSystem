@@ -34,15 +34,15 @@ namespace ECommerce.Service
             return await _basketRepository.DeleteBasketAsync(basketId);
         }
 
-        public Task<BasketDTO?> GetBasketAsync(string basketId)
+        public async Task<BasketDTO?> GetBasketAsync(string basketId)
         {
-            var basket= _basketRepository.GetBasketAsync(basketId);
+            var basket= await _basketRepository.GetBasketAsync(basketId);
 
             if (basket is null)
             {
                 throw new BasketNotFoundException(basketId);
             }
-            return _mapper.Map<Task<BasketDTO?>>(basket);
+            return _mapper.Map<BasketDTO?>(basket);
         }
     }
 }

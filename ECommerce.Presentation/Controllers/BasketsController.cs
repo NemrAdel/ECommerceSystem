@@ -19,7 +19,7 @@ namespace ECommerce.Presentation.Controllers
         {
             _basketService = basketService;
         }
-        [HttpGet]
+        [HttpGet("{basketId}")]
         public async Task<ActionResult<BasketDTO>> GetBasket(string basketId)
         {
             var basket = await _basketService.GetBasketAsync(basketId);
