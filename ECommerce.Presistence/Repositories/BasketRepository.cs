@@ -14,6 +14,7 @@ namespace ECommerce.Presistence.Repositories
     public class BasketRepository : IBasketRepository
     {
         private readonly IDatabase _database;
+
         public BasketRepository(IConnectionMultiplexer connection)
         {
             _database = connection.GetDatabase();
