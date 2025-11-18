@@ -1,4 +1,5 @@
-﻿using ECommerce.Services.Abstraction;
+﻿using ECommerce.Presentation.Attributes;
+using ECommerce.Services.Abstraction;
 using ECommerce.Shared;
 using ECommerce.Shared.DTOs.ProductDTOs;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +21,9 @@ namespace ECommerce.Presentation.Controllers
         {
             _productService = productService;
         }
+        [RedisCache(10)]
         [HttpGet("GetAllProduct")]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern
+        public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern
         {
             var products = await  _productService.GetAllProductAsync(queryParams);
             return Ok(products);
@@ -30,10 +32,18 @@ namespace ECommerce.Presentation.Controllers
         [HttpGet("GetProductById/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
-                return NotFound();
-            return Ok(product);
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product is null)
+                    {
+
+                        return NotFound(new ProblemDetails()
+                        {
+                            Title="Not Found",
+                            Detail=$"object with id {id} not found",
+                            Instance=HttpContext.Request.Path,
+                        });
+                    }
+                return Ok(product);
         }
 
         [HttpGet("brands")]

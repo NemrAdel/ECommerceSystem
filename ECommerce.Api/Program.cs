@@ -1,6 +1,7 @@
-
 using AutoMapper;
+using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
+using ECommerce.Api.Factories;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
@@ -8,7 +9,9 @@ using ECommerce.Presistence.Repositories;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace ECommerce.Api
 {
@@ -31,21 +34,51 @@ namespace ECommerce.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+
             builder.Services.AddScoped<IDataSeed, DataSeeding>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddTransient<ProductPictureurlResolver>();
             //builder.Services.AddScoped<IMapper, Mapper>();
             builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+            builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);
+            });
+
+            builder.Services.AddScoped<IBasketService,BasketService>();
+            builder.Services.AddScoped<ICacheRepository,CacheRepository>();
+            builder.Services.AddScoped<ICacheService,CacheService>();
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
+            );
             #endregion
 
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
             var app = builder.Build();
             await app.MigrateDataBase();
             await app.SeedData();
+
+
+
             #region PipLine [MidleWares]
 
 
+
             // Configure the HTTP request pipeline.
+            app.UseMiddleware<ExceptionHandlerMiddleWare>(); // using custome middleware
             if (app.Environment.IsDevelopment())
             {
                 //app.MapOpenApi();
@@ -55,7 +88,7 @@ namespace ECommerce.Api
             }
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
 
 
