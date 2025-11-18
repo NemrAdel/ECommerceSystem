@@ -1,6 +1,7 @@
 using AutoMapper;
 using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
+using ECommerce.Api.Factories;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
@@ -8,6 +9,7 @@ using ECommerce.Presistence.Repositories;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 
@@ -64,6 +66,10 @@ namespace ECommerce.Api
             var app = builder.Build();
             await app.MigrateDataBase();
             await app.SeedData();
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
+            );
 
             #region PipLine [MidleWares]
 
