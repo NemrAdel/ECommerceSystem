@@ -50,6 +50,10 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IBasketService,BasketService>();
             builder.Services.AddScoped<ICacheRepository,CacheRepository>();
             builder.Services.AddScoped<ICacheService,CacheService>();
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
+            );
             #endregion
 
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -67,13 +71,11 @@ namespace ECommerce.Api
             await app.MigrateDataBase();
             await app.SeedData();
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
-            );
+
 
             #region PipLine [MidleWares]
 
-            
+
 
             // Configure the HTTP request pipeline.
             app.UseMiddleware<ExceptionHandlerMiddleWare>(); // using custome middleware
