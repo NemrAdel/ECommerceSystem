@@ -70,7 +70,7 @@ namespace ECommerce.Api
             
 
             // Configure the HTTP request pipeline.
-            app.UseMiddleware<ExceptionHandlerMiddleWare>();
+            app.UseMiddleware<ExceptionHandlerMiddleWare>(); // using custome middleware
             if (app.Environment.IsDevelopment())
             {
                 //app.MapOpenApi();
