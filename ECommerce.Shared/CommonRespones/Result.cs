@@ -67,6 +67,12 @@ namespace ECommerce.Shared.CommonRespones
         public new static Result<TValue> Fail(Error error)=>new(error); // syntax sugar he know what i return
         public new static Result<TValue> Fail(List<Error> errors)=>new Result<TValue>(errors);
 
+        public static implicit operator Result<TValue>(TValue value)=>Ok(value);
+
+        public static implicit operator Result<TValue>(Error error)=>Fail(error);
+
+        public static implicit operator Result<TValue>(List<Error> errors)=>Fail(errors);
+
 
     }
 }

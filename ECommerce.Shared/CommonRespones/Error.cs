@@ -26,6 +26,10 @@ namespace ECommerce.Shared.CommonRespones
         {
             return new Error(code , description , ErrorType.Validation);
         }
+        public static Error NotFound(string code = "General Failure", string description = "A General Failure Has Occurred")
+        {
+            return new Error(code , description , ErrorType.Validation);
+        }
 
     }
 }

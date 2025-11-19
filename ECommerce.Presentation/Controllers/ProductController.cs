@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Presentation.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController:ControllerBase
+
+    public class ProductController:ApiBaseController
     {
         private readonly IProductService _productService;
 
@@ -32,18 +31,8 @@ namespace ECommerce.Presentation.Controllers
         [HttpGet("GetProductById/{id}")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-                var product = await _productService.GetProductByIdAsync(id);
-                if (product is null)
-                    {
-
-                        return NotFound(new ProblemDetails()
-                        {
-                            Title="Not Found",
-                            Detail=$"object with id {id} not found",
-                            Instance=HttpContext.Request.Path,
-                        });
-                    }
-                return Ok(product);
+                var result = await _productService.GetProductByIdAsync(id);
+            return HandleResult<ProductDTO>(result);
         }
 
         [HttpGet("brands")]
