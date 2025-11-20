@@ -28,7 +28,7 @@ namespace ECommerce.Shared.CommonRespones
         }
         public static Error NotFound(string code = "NotFound.Failure", string description = "A General NotFound Has Occurred")
         {
-            return new Error(code , description , ErrorType.Validation);
+            return new Error(code , description , ErrorType.NotFound);
         }
 
         public static Error UnAuthorized(

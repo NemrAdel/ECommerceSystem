@@ -14,7 +14,7 @@ namespace ECommerce.Presentation.Controllers
     [Route("api/[controller]")]
     public class ApiBaseController:ControllerBase
     {
-        public IActionResult HandleResult(Result result)
+        protected IActionResult HandleResult(Result result)
         {
             if (result.IsSuccess)
                 return NoContent();
@@ -23,7 +23,7 @@ namespace ECommerce.Presentation.Controllers
                 return HandleProblem(result.errors);
 
         }
-        public ActionResult<TValue>HandleResult<TValue>(Result<TValue> result)
+        protected ActionResult<TValue>HandleResult<TValue>(Result<TValue> result)
         {
             if (result.IsSuccess)
                 return Ok(result.Value);
