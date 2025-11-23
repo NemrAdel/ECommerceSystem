@@ -3,12 +3,16 @@ using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
 using ECommerce.Api.Factories;
 using ECommerce.Doamin.Contracts;
+using ECommerce.Doamin.Entities.IdentityModule;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
+using ECommerce.Presistence.IdentityData.DataSeed;
+using ECommerce.Presistence.IdentityData.DbContext;
 using ECommerce.Presistence.Repositories;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
@@ -35,8 +39,15 @@ namespace ECommerce.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            // database security models
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
-            builder.Services.AddScoped<IDataSeed, DataSeeding>();
+
+            builder.Services.AddKeyedScoped<IDataSeed, DataSeeding>("Default");
+            builder.Services.AddKeyedScoped<IDataSeed, IdentityDataIntializer>("Identity");
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddTransient<ProductPictureurlResolver>();
@@ -51,6 +62,12 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IBasketService,BasketService>();
             builder.Services.AddScoped<ICacheRepository,CacheRepository>();
             builder.Services.AddScoped<ICacheService,CacheService>();
+
+            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            //.AddEntityFrameWorkStores<StoreIdentityDbContext>();//Take the user and role => we didn't modify role 
+
+            builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>(); // light weight for user only and roles
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
@@ -70,7 +87,8 @@ namespace ECommerce.Api
             });
             var app = builder.Build();
             await app.MigrateDataBase();
-            await app.SeedData();
+            await app.SeedDataAsync();
+            await app.SeedIdentityData();
 
 
 
