@@ -62,6 +62,7 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IBasketService,BasketService>();
             builder.Services.AddScoped<ICacheRepository,CacheRepository>();
             builder.Services.AddScoped<ICacheService,CacheService>();
+            builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
 
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameWorkStores<StoreIdentityDbContext>();//Take the user and role => we didn't modify role 
