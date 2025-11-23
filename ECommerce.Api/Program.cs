@@ -12,10 +12,13 @@ using ECommerce.Presistence.Repositories;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
 
 
 namespace ECommerce.Api
@@ -64,6 +67,25 @@ namespace ECommerce.Api
             builder.Services.AddScoped<ICacheService,CacheService>();
             builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme; //use the same schema whicj generate the token
+                options.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme; // use if it invalid or not 
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true; // save in httpcontext to retrieve any time if it valid
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer=true,
+                    ValidateAudience=true,
+                    ValidateLifetime=true,
+                    ValidIssuer = builder.Configuration["JWTOptions:Issuer"],
+                    ValidAudience = builder.Configuration["JWTOptions:Audience"],
+                    IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTOptions:SecretKey"]!))
+                };
+
+            });
+
             //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             //.AddEntityFrameWorkStores<StoreIdentityDbContext>();//Take the user and role => we didn't modify role 
 
@@ -109,6 +131,8 @@ namespace ECommerce.Api
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseAuthorization();
 
 
