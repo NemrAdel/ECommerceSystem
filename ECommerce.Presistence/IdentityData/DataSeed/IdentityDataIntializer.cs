@@ -16,8 +16,12 @@ namespace ECommerce.Presistence.IdentityData.DataSeed
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger _logger;
 
-        public IdentityDataIntializer(UserManager<ApplicationUser> userManager 
-            , RoleManager<IdentityRole> roleManager, ILogger logger)
+        public IdentityDataIntializer
+            (
+            UserManager<ApplicationUser> userManager 
+            , RoleManager<IdentityRole> roleManager
+            , ILogger<IdentityDataIntializer> logger
+            )
         {
             _userManager = userManager;
             _roleManager = roleManager;

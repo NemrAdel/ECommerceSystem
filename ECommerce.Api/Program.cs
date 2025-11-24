@@ -109,7 +109,8 @@ namespace ECommerce.Api
                     });
             });
             var app = builder.Build();
-            await app.MigrateDataBase();
+            await app.MigrateDataBaseAsync();
+            await app.MigrateIdentityDataBaseAsync();
             await app.SeedDataAsync();
             await app.SeedIdentityData();
 

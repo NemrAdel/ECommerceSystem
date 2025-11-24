@@ -14,7 +14,7 @@ namespace ECommerce.Presentation.Controllers
     [Route("api/[controller]")]
     public class ApiBaseController:ControllerBase
     {
-        public IActionResult HandleResult(Result result)
+        protected IActionResult HandleResult(Result result)
         {
             if (result.IsSuccess)
                 return NoContent();
