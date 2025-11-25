@@ -2,6 +2,7 @@
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared;
 using ECommerce.Shared.DTOs.ProductDTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace ECommerce.Presentation.Controllers
         {
             _productService = productService;
         }
-
+        [Authorize(Roles ="SuperAdmin")]
         [RedisCache(10)]
         [HttpGet("GetAllProduct")]
         public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern

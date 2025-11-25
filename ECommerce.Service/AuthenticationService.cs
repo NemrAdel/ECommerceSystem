@@ -19,12 +19,19 @@ namespace ECommerce.Service
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly StoreIdentityDbContext _context;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager,IConfiguration configuration)
+        public AuthenticationService(
+            UserManager<ApplicationUser> userManager
+            ,IConfiguration configuration,
+            StoreIdentityDbContext context
+            )
         {
             _userManager = userManager;
             _configuration = configuration;
+            _context = context;
         }
+
         public async Task<Result<UserDTO>> LoginAsync(LoginDTO loginDTO)
         {
             var user=await _userManager.FindByEmailAsync(loginDTO.Email);
@@ -86,6 +93,28 @@ namespace ECommerce.Service
 
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<bool> CheckEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user != null;
+        }
+
+        public async Task<Result<UserDTO>> GetUserByEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Error.NotFound("User.NotFound", $"User With the email {email} is not found");
+            return new UserDTO(user.Email!, user.DisplayName, await CreateTokenAsync(user));
+        }
+
+        public Task<Result<UserDTO>> GetAddress(string email)
+        {
+            var user = _userManager.FindByEmailAsync(email);
+            var UserId=user.Id.ToString();
+            var Address=_userManager.
+
         }
     }
 }

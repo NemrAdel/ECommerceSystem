@@ -21,6 +21,7 @@ using StackExchange.Redis;
 using System.Text;
 
 
+
 namespace ECommerce.Api
 {
     public class Program
@@ -69,8 +70,8 @@ namespace ECommerce.Api
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme; //use the same schema whicj generate the token
-                options.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme; // use if it invalid or not 
+                options.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme; //use the same schema whicj generate the token (see the token)
+                options.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme; // use if it invalid or not (if not valid return 401)
             }).AddJwtBearer(options =>
             {
                 options.SaveToken = true; // save in httpcontext to retrieve any time if it valid
@@ -109,7 +110,8 @@ namespace ECommerce.Api
                     });
             });
             var app = builder.Build();
-            await app.MigrateDataBase();
+            await app.MigrateDataBaseAsync();
+            await app.MigrateIdentityDataBaseAsync();
             await app.SeedDataAsync();
             await app.SeedIdentityData();
 
@@ -132,7 +134,6 @@ namespace ECommerce.Api
             app.UseHttpsRedirection();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UseAuthorization();
 
 
