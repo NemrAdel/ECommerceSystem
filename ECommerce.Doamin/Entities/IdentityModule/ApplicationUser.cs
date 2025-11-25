@@ -11,6 +11,6 @@ namespace ECommerce.Doamin.Entities.IdentityModule
     public class ApplicationUser:IdentityUser
     {
         public string DisplayName { get; set; } = default!;
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
     }
 }
