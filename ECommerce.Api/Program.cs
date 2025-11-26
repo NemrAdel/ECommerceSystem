@@ -3,15 +3,23 @@ using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
 using ECommerce.Api.Factories;
 using ECommerce.Doamin.Contracts;
+using ECommerce.Doamin.Entities.IdentityModule;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
+using ECommerce.Presistence.IdentityData.DataSeed;
+using ECommerce.Presistence.IdentityData.DbContext;
 using ECommerce.Presistence.Repositories;
 using ECommerce.Service;
 using ECommerce.Service.MappingProfiles;
 using ECommerce.Services.Abstraction;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using System.Text;
+
 
 
 namespace ECommerce.Api
@@ -35,8 +43,15 @@ namespace ECommerce.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            // database security models
+            builder.Services.AddDbContext<StoreIdentityDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
-            builder.Services.AddScoped<IDataSeed, DataSeeding>();
+
+            builder.Services.AddKeyedScoped<IDataSeed, DataSeeding>("Default");
+            builder.Services.AddKeyedScoped<IDataSeed, IdentityDataIntializer>("Identity");
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddTransient<ProductPictureurlResolver>();
@@ -51,6 +66,32 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IBasketService,BasketService>();
             builder.Services.AddScoped<ICacheRepository,CacheRepository>();
             builder.Services.AddScoped<ICacheService,CacheService>();
+            builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme=JwtBearerDefaults.AuthenticationScheme; //use the same schema whicj generate the token (see the token)
+                options.DefaultChallengeScheme=JwtBearerDefaults.AuthenticationScheme; // use if it invalid or not (if not valid return 401)
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true; // save in httpcontext to retrieve any time if it valid
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer=true,
+                    ValidateAudience=true,
+                    ValidateLifetime=true,
+                    ValidIssuer = builder.Configuration["JWTOptions:Issuer"],
+                    ValidAudience = builder.Configuration["JWTOptions:Audience"],
+                    IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTOptions:SecretKey"]!))
+                };
+
+            });
+
+            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            //.AddEntityFrameWorkStores<StoreIdentityDbContext>();//Take the user and role => we didn't modify role 
+
+            builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>(); // light weight for user only and roles
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
@@ -69,8 +110,10 @@ namespace ECommerce.Api
                     });
             });
             var app = builder.Build();
-            await app.MigrateDataBase();
-            await app.SeedData();
+            await app.MigrateDataBaseAsync();
+            await app.MigrateIdentityDataBaseAsync();
+            await app.SeedDataAsync();
+            await app.SeedIdentityData();
 
 
 
@@ -90,6 +133,7 @@ namespace ECommerce.Api
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
