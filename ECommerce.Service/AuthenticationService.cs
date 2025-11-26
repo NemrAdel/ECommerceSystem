@@ -19,17 +19,17 @@ namespace ECommerce.Service
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        private readonly StoreIdentityDbContext _context;
+        //private readonly StoreIdentityDbContext _context;
 
         public AuthenticationService(
             UserManager<ApplicationUser> userManager
-            ,IConfiguration configuration,
-            StoreIdentityDbContext context
+            ,IConfiguration configuration
+            //StoreIdentityDbContext context
             )
         {
             _userManager = userManager;
             _configuration = configuration;
-            _context = context;
+            //_context = context;
         }
 
         public async Task<Result<UserDTO>> LoginAsync(LoginDTO loginDTO)
@@ -109,12 +109,12 @@ namespace ECommerce.Service
             return new UserDTO(user.Email!, user.DisplayName, await CreateTokenAsync(user));
         }
 
-        public Task<Result<UserDTO>> GetAddress(string email)
-        {
-            var user = _userManager.FindByEmailAsync(email);
-            var UserId=user.Id.ToString();
-            var Address=_userManager.
+        //public Task<Result<UserDTO>> GetAddress(string email)
+        //{
+        //    var user = _userManager.FindByEmailAsync(email);
+        //    var UserId=user.Id.ToString();
+        //    var Address=_userManager.
 
-        }
+        //}
     }
 }

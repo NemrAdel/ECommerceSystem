@@ -16,7 +16,7 @@ namespace ECommerce.Services.Abstraction
         Task<bool> CheckEmailAsync(string email);
         Task<Result<UserDTO>> GetUserByEmailAsync(string email);
 
-        Task<Result<UserDTO>> GetAddress(string email);
+        //Task<Result<UserDTO>> GetAddress(string email);
 
     }
 }

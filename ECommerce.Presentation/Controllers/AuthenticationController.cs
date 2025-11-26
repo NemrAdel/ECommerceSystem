@@ -49,11 +49,11 @@ namespace ECommerce.Presentation.Controllers
         }
 
 
-        [HttpGet("GetAddress")]
-        public async Task<ActionResult<UserDTO>> GetAddress()
-        {
+        //[HttpGet("GetAddress")]
+        //public async Task<ActionResult<UserDTO>> GetAddress()
+        //{
 
-        }
+        //}
 
 
     }
