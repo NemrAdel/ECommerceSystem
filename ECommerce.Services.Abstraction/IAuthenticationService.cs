@@ -1,5 +1,6 @@
 ﻿using ECommerce.Shared.CommonRespones;
 using ECommerce.Shared.DTOs.IdentityDTOs;
+using ECommerce.Shared.DTOs.SecurityDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,8 @@ namespace ECommerce.Services.Abstraction
         Task<bool> CheckEmailAsync(string email);
         Task<Result<UserDTO>> GetUserByEmailAsync(string email);
 
-        //Task<Result<UserDTO>> GetAddress(string email);
+        Task<Result<AddressDTO>> GetAddress(string email);
+        Task<Result<bool>> UpdateAddress(string email,AddressDTO address);
 
     }
 }
