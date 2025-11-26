@@ -1,7 +1,9 @@
-﻿using ECommerce.Doamin.Entities.IdentityModule;
+﻿using ECommerce.Doamin.Contracts;
+using ECommerce.Doamin.Entities.IdentityModule;
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared.CommonRespones;
 using ECommerce.Shared.DTOs.IdentityDTOs;
+using ECommerce.Shared.DTOs.SecurityDTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,17 +21,17 @@ namespace ECommerce.Service
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        //private readonly StoreIdentityDbContext _context;
+        private readonly ISecurityRepository<Address> _context;
 
         public AuthenticationService(
             UserManager<ApplicationUser> userManager
-            ,IConfiguration configuration
-            //StoreIdentityDbContext context
+            ,IConfiguration configuration,
+            ISecurityRepository<Address> context
             )
         {
             _userManager = userManager;
             _configuration = configuration;
-            //_context = context;
+            _context = context;
         }
 
         public async Task<Result<UserDTO>> LoginAsync(LoginDTO loginDTO)
@@ -109,12 +111,33 @@ namespace ECommerce.Service
             return new UserDTO(user.Email!, user.DisplayName, await CreateTokenAsync(user));
         }
 
-        //public Task<Result<UserDTO>> GetAddress(string email)
-        //{
-        //    var user = _userManager.FindByEmailAsync(email);
-        //    var UserId=user.Id.ToString();
-        //    var Address=_userManager.
+        public async Task<Result<AddressDTO>> GetAddress(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var Address = await _context.GetAddressAsync(user.Id.ToString());
+            var MappedAddress = new AddressDTO(City: Address.City, Country: Address.Country, Street: Address.Street, FirstName: Address.FirstName, LastName: Address.LastName, userId: Address.UserId);
+            return MappedAddress;
 
-        //}
+        }
+
+        public async Task<Result<bool>> UpdateAddress(string email, AddressDTO addressToUpdate)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var Address = await _context.GetAddressAsync(user.Id.ToString());
+
+
+            Address.City = addressToUpdate.City;
+            Address.Country = addressToUpdate.Country;
+            Address.Street = addressToUpdate.Street;
+            Address.FirstName = addressToUpdate.FirstName;
+            Address.LastName = addressToUpdate.LastName;
+            Address.UserId = addressToUpdate.userId;
+            
+            return await _context.UpdateAddressAsync(Address);
+            
+
+
+
+        }
     }
 }

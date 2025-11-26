@@ -1,5 +1,7 @@
-﻿using ECommerce.Services.Abstraction;
+﻿using ECommerce.Doamin.Entities.IdentityModule;
+using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.IdentityDTOs;
+using ECommerce.Shared.DTOs.SecurityDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -48,12 +50,21 @@ namespace ECommerce.Presentation.Controllers
             return HandleResult(user);
         }
 
+        [Authorize]
+        [HttpGet("GetAddress")]
+        public async Task<ActionResult<AddressDTO>> GetAddress(string email)
+        {
+            var Result = await _authenticationService.GetAddress(email);
+            return Ok(Result);
+        }
 
-        //[HttpGet("GetAddress")]
-        //public async Task<ActionResult<UserDTO>> GetAddress()
-        //{
 
-        //}
+        [HttpPut("UpdateAddress")]
+        public async Task<ActionResult<bool>> UpdateAddress(string email,AddressDTO addressToUpdate)
+        {
+            var Result = await _authenticationService.UpdateAddress(email,addressToUpdate);
+            return HandleResult(Result);
+        }
 
 
     }
