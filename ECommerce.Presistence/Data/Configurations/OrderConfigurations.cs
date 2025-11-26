@@ -20,7 +20,7 @@ namespace ECommerce.Presistence.Data.Configurations
                 OE.Property(x => x.City).HasMaxLength(100);
                 OE.Property(x => x.Street).HasMaxLength(100);
                 OE.Property(x => x.Country).HasMaxLength(100);
-            };
+            });
         }
     }
 }
