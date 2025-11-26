@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ECommerce.Doamin.Entities.OrderModule
+namespace ECommerce.Shared.DTOs.OderDTOs
 {
-    public class OrderItem:BaseEntity<int>
+    public class OrderItemDTO
     {
-        public ProductItemOrdered Product { get; set; } = default!;
+        public string ProductName { get; set; } = default!;
+        public string PictureUrl { get; set; } = default!;
         public decimal Price { get; set; }
-        public string Name { get; set; } = default!;
         public int Quantity { get; set; }
     }
 }
