@@ -2,6 +2,7 @@
 using ECommerce.Doamin.Contracts;
 using ECommerce.Doamin.Entities.OrderModule;
 using ECommerce.Doamin.Entities.ProductModule;
+using ECommerce.Service.Specifications.OrrderSpecifications;
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared.CommonRespones;
 using ECommerce.Shared.DTOs.OderDTOs;
@@ -47,7 +48,7 @@ namespace ECommerce.Service
                         ("Product.NotFound"
                         , $"the product with id :{items.Id} is not found");
 
-                orderItems.Add(CreateOrderItem(items, product));
+                 orderItems.Add(CreateOrderItem(items, product));
                                
             }
 
@@ -67,11 +68,40 @@ namespace ECommerce.Service
                 SubTotal=SubTotal,
                 Items=orderItems,
             };
-            await _unitOfWork.GetRepository<Order, Guid>().AddAsync(Order);
+            await _unitOfWork.GetRepository<Order, Guid>().AddAsync(order);
             bool result = await _unitOfWork.saveChangesAsync() > 0;
             if (!result)
                  Error.Failure("Order.Failure", "there was a problem when save changes");
             return _mapper.Map<OrderToReturnDTO>(order);
+        }
+
+        public async Task<Result<IEnumerable<DeliveryMethodDTO>>> GetAllDeliveryMethodAsync()
+        {
+            var deliveryMethods = await _unitOfWork.GetRepository<DeliveryMethod, int>().GetAllAsync();
+            if (!deliveryMethods.Any())
+                return Error.NotFound("DeliveryMethod.NotFound", "No Delivery method");
+            var data= _mapper.Map<IEnumerable<DeliveryMethod>, IEnumerable<DeliveryMethodDTO>>(deliveryMethods);
+            return Result<IEnumerable<DeliveryMethodDTO>>.Ok(data);
+        }
+
+        public async Task<Result<IEnumerable<OrderToReturnDTO>>> GetAllOrdersAsync(string email)
+        {
+            var OrderSpec = new OrderSpecification(email);
+            var orders = await _unitOfWork.GetRepository<Order, Guid>().GetAllAsync(OrderSpec);
+            if (!orders.Any())
+                return Error.NotFound("Orders.NotFound",$"No Orders Found With this email {email}");
+            var data=_mapper.Map<IEnumerable<Order>, IEnumerable<OrderToReturnDTO>>(orders);
+            return Result<IEnumerable<OrderToReturnDTO>>.Ok(data);
+        }
+
+        public async Task<Result<OrderToReturnDTO>> GetOrderByIdAsync(Guid id,string email)
+        {
+            var orderSpec=new OrderSpecification(id,email);
+            var order = await _unitOfWork.GetRepository<Order, Guid>().GetByIdAsync(orderSpec);
+            if (order is null)
+                return Error.NotFound("Order.NotFound",$"Order Not Found with id: {order!.Id}");
+            var data = _mapper.Map<Order, OrderToReturnDTO>(order);
+            return Result<OrderToReturnDTO>.Ok(data);   
         }
 
         private async Task<OrderItem> CreateOrderItem(Doamin.Entities.BasketModule.BasketItem items, Product product)

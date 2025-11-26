@@ -22,7 +22,7 @@ namespace ECommerce.Service.MappingProfiles
                 opt.MapFrom(src => src.Product.ProductName))
                 .ForMember(d => d.PictureUrl, o =>
                 o.MapFrom<OrderItemPictureResolver>());
-                
+            CreateMap<DeliveryMethod, DeliveryMethodDTO>();    
 
         }
     }
