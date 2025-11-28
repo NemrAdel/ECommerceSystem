@@ -15,7 +15,7 @@ namespace ECommerce.Presistence.Data.Configurations
         {
             builder.Property(x => x.SubTotal).HasColumnType("decimal(8,2)");
             builder.OwnsOne(x => x.Address, OE => {
-                OE.Property(x => x.FirsName).HasMaxLength(100);
+                OE.Property(x => x.FirstName).HasMaxLength(100);
                 OE.Property(x => x.LastName).HasMaxLength(100);
                 OE.Property(x => x.City).HasMaxLength(100);
                 OE.Property(x => x.Street).HasMaxLength(100);

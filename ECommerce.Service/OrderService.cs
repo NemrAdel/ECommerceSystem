@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ECommerce.Doamin.Contracts;
+using ECommerce.Doamin.Entities.BasketModule;
 using ECommerce.Doamin.Entities.OrderModule;
 using ECommerce.Doamin.Entities.ProductModule;
 using ECommerce.Service.Specifications.OrrderSpecifications;
@@ -32,7 +33,9 @@ namespace ECommerce.Service
         }
         public async Task<Result<OrderToReturnDTO>> CreateOrderAsync(OrderDTO orderDTO, string Email)
         {
+            //1- Order Address
             var orderAddress = _mapper.Map<OrderAddressDTO, OrderAddress>(orderDTO.Address);
+            //2- Basket
             var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId);
             if (basket is null)
                 return Error.NotFound
@@ -42,6 +45,7 @@ namespace ECommerce.Service
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach(var items in basket.Items)
             {
+                //3- Product
                 var product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(items.Id);
                 if (product is null)
                     return Error.NotFound
@@ -51,16 +55,17 @@ namespace ECommerce.Service
                  orderItems.Add(CreateOrderItem(items, product));
                                
             }
-
+            //4- Delivery Method
             var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>()
                 .GetByIdAsync(orderDTO.DeliveryMethodId);
             if(deliveryMethod is null)
                 return Error.NotFound
                         ("DeliveryMethod.NotFound"
                         , $"the Delivery with id :{orderDTO.DeliveryMethodId} is not found");
-
+            //5- SubTotal
             var SubTotal = orderItems.Sum(x => x.Price * x.Quantity);
-            var order=new Order()
+            //6- Create Order
+            var order =new Order()
             {
                 UserEmail=Email,
                 Address=orderAddress,
@@ -104,7 +109,7 @@ namespace ECommerce.Service
             return Result<OrderToReturnDTO>.Ok(data);   
         }
 
-        private async Task<OrderItem> CreateOrderItem(Doamin.Entities.BasketModule.BasketItem items, Product product)
+        private OrderItem CreateOrderItem(BasketItem items, Product product)
         {
             return new OrderItem()
             {
@@ -116,6 +121,7 @@ namespace ECommerce.Service
                 },
                 Price = product.Price,
                 Quantity = items.Quantity,
+                Name=product.Name
             };
         }
     }

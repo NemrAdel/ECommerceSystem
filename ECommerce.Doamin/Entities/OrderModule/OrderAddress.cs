@@ -8,7 +8,7 @@ namespace ECommerce.Doamin.Entities.OrderModule
 {
     public class OrderAddress
     {
-        public string? FirsName { get; set; }
+        public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? City { get; set; }
         public string? Street { get; set; }

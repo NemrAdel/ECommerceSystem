@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Presistence.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20251126194716_OrderModule")]
-    partial class OrderModule
+    [Migration("20251128222508_ProductAndOrderModule2")]
+    partial class ProductAndOrderModule2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,6 +102,9 @@ namespace ECommerce.Presistence.Data.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(8,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -207,7 +210,7 @@ namespace ECommerce.Presistence.Data.Migrations
                                 .HasMaxLength(100)
                                 .HasColumnType("nvarchar(100)");
 
-                            b1.Property<string>("FirsName")
+                            b1.Property<string>("FirstName")
                                 .HasMaxLength(100)
                                 .HasColumnType("nvarchar(100)");
 
