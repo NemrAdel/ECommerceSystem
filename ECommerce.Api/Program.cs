@@ -17,7 +17,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text;
 
 
@@ -36,7 +38,36 @@ namespace ECommerce.Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             //builder.Services.AddOpenApi(); 
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ECommerce.Api", Version = "v1" });
+
+                // Define the JWT Bearer security scheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer",
+                    Description = "Please insert JWT token into field"
+                });
+
+                // Add a security requirement to use the Bearer scheme
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+            });
+        });
 
             builder.Services.AddDbContext<StoreDbContext>(options =>
             {
@@ -100,10 +131,10 @@ namespace ECommerce.Api
             );
             #endregion
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+;           var PolicyName = "DevelopmentPolicy";
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
+                options.AddPolicy(PolicyName,
                     builder =>
                     {
                         builder.AllowAnyOrigin()
@@ -111,6 +142,7 @@ namespace ECommerce.Api
                                .AllowAnyMethod();
                     });
             });
+
             var app = builder.Build();
             await app.MigrateDataBaseAsync();
             await app.MigrateIdentityDataBaseAsync();
@@ -129,12 +161,17 @@ namespace ECommerce.Api
             {
                 //app.MapOpenApi();
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(opt =>
+                {
+                    opt.DisplayRequestDuration();
+                    opt.EnableFilter();
+                    opt.DocExpansion(DocExpansion.None);
+                });
 
             }
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(PolicyName);
             app.UseAuthentication();
             app.UseAuthorization();
 

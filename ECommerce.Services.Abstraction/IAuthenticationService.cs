@@ -18,7 +18,7 @@ namespace ECommerce.Services.Abstraction
         Task<Result<UserDTO>> GetUserByEmailAsync(string email);
 
         Task<Result<AddressDTO>> GetAddress(string email);
-        Task<Result<bool>> UpdateAddress(string email,AddressDTO address);
+        Task<Result<AddressDTO>> UpdateAddress(string email,AddressDTO address);
 
     }
 }

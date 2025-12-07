@@ -9,6 +9,7 @@
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
 
+        //public DateTime? UpdateAt { get; set; }
         public ApplicationUser User { get; set; } = default!;
 
         public string? UserId { get; set; }

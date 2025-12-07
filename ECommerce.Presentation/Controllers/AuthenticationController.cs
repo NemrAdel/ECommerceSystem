@@ -3,6 +3,7 @@ using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.IdentityDTOs;
 using ECommerce.Shared.DTOs.SecurityDTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -49,20 +50,26 @@ namespace ECommerce.Presentation.Controllers
             var user = await _authenticationService.GetUserByEmailAsync(email!);
             return HandleResult(user);
         }
-
+        [ProducesResponseType<AddressDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
         [Authorize]
-        [HttpGet("GetAddress")]
-        public async Task<ActionResult<AddressDTO>> GetAddress(string email)
+        [HttpGet("Address")]
+        public async Task<ActionResult<AddressDTO>> GetAddress()
         {
-            var Result = await _authenticationService.GetAddress(email);
-            return Ok(Result);
+            var eamil =GetEmailFromToken();
+            var Result = await _authenticationService.GetAddress(eamil);
+            return HandleResult(Result);
         }
 
-
-        [HttpPut("UpdateAddress")]
-        public async Task<ActionResult<bool>> UpdateAddress(string email,AddressDTO addressToUpdate)
+        [ProducesResponseType<AddressDTO>(StatusCodes.Status200OK)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+        [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+        [HttpPut("Address")]
+        public async Task<ActionResult<AddressDTO>> UpdateAddress(AddressDTO addressToUpdate)
         {
-            var Result = await _authenticationService.UpdateAddress(email,addressToUpdate);
+            var eamil = GetEmailFromToken();
+            var Result = await _authenticationService.UpdateAddress(eamil,addressToUpdate);
             return HandleResult(Result);
         }
 

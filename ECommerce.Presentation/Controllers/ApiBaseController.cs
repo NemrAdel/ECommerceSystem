@@ -16,7 +16,7 @@ namespace ECommerce.Presentation.Controllers
     public class ApiBaseController:ControllerBase
     {
 
-        protected string GetEmailFromToken => User.FindFirstValue(ClaimTypes.Email);
+        protected string GetEmailFromToken() => User.FindFirstValue(ClaimTypes.Email)!;
         protected IActionResult HandleResult(Result result)
         {
             if (result.IsSuccess)

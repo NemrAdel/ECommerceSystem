@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Shared.DTOs.SecurityDTOs
 {
-    public record AddressDTO(string City , string Country , string Street , string FirstName , string LastName, string userId)
+    public class AddressDTO()
     {
+        public string City { get; init; }
+        public string Country { get; init; }
+        public string Street { get; init; }
+        public string FirstName { get; init; }
+        public string LastName { get; init; }
     }
 }
