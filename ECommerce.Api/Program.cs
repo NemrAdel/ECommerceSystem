@@ -1,4 +1,3 @@
-using AutoMapper;
 using ECommerce.Api.CustomeMiddleWares;
 using ECommerce.Api.Extensions;
 using ECommerce.Api.Factories;
@@ -144,7 +143,7 @@ namespace ECommerce.Api
             });
 
             var app = builder.Build();
-            await app.MigrateDataBaseAsync();
+            //await app.MigrateDataBaseAsync();
             await app.MigrateIdentityDataBaseAsync();
             await app.SeedDataAsync();
             await app.SeedIdentityData();
