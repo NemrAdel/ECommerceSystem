@@ -13,17 +13,16 @@ using System.Threading.Tasks;
 namespace ECommerce.Presentation.Controllers
 {
 
-    public class ProductController:ApiBaseController
+    public class ProductsController:ApiBaseController
     {
         private readonly IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductsController(IProductService productService)
         {
             _productService = productService;
         }
-        [Authorize(Roles ="SuperAdmin")]
         [RedisCache(10)]
-        [HttpGet("GetAllProduct")]
+        [HttpGet]
         public async Task<ActionResult<PaginatedResult<ProductDTO>>> GetAllProduct([FromQuery]ProductQueryParams queryParams)//clean code : must be by max 3 parameters in the function so should make object parameter design pattern
         {
             var products = await  _productService.GetAllProductAsync(queryParams);

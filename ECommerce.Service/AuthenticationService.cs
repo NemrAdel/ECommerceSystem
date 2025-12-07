@@ -123,8 +123,6 @@ namespace ECommerce.Service
             if(user is null)
                 return Error.NotFound("User.NotFound", $"User With the email {email} is not found");
             var Address = await _context.GetAddressAsync(user.Id.ToString());
-            if(Address is null)
-                return Error.NotFound("Address.NotFound", $"Address for User With the email {email} is not found");
 
             var MappedAddress = _mapper.Map<AddressDTO>(Address);
             return MappedAddress;

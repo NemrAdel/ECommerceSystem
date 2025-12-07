@@ -36,7 +36,7 @@ namespace ECommerce.Presentation.Controllers
             return HandleResult(result);
         }
 
-        [HttpGet("emailExist")]
+        [HttpGet("emailExists")]
         public async Task<ActionResult<bool>> CheckEmail(string email)
         {
             var Result = await _authenticationService.CheckEmailAsync(email);
