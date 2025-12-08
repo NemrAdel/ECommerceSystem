@@ -9,7 +9,6 @@ namespace ECommerce.Doamin.Entities.BasketModule
     public class CostumerBasket
     {
         public string Id { get; set; } = default!; // Created from frontEnd [GUID]
-
         public int? DeliveryMethodId { get; set; }
         public decimal ShippingPrice { get; set; }
         public string? PaymentIntentId { get; set; }
