@@ -10,7 +10,8 @@ namespace ECommerce.Doamin.Entities.OrderModule
     {
         public string UserEmail { get; set; } = default!;
         public DateTimeOffset OrderDate { get; set; } = DateTimeOffset.Now; // offset mean if the server on another country
-        public OrderStatus Status { get; set; } = OrderStatus.Pending; 
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public string PaymentIntentId { get; set; } = default!; 
         public OrderAddress Address { get; set; } = default!; 
         public DeliveryMethod DeliveryMethod { get; set; } = default!; 
         public int DeliveryMethodId { get; set; } = default!; // FK

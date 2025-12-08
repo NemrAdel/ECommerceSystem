@@ -10,6 +10,6 @@ namespace ECommerce.Doamin.Entities.OrderModule
     {
         Pending,
         PaymentFailed,
-        PaymentRecived
+        PaymentReceived
     }
 }

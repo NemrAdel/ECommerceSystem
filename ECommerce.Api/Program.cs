@@ -88,6 +88,7 @@ namespace ECommerce.Api
             //builder.Services.AddScoped<IMapper, Mapper>();
             builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
             builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 return ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!);

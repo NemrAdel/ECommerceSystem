@@ -34,7 +34,7 @@ namespace ECommerce.Service
         public async Task<Result<OrderToReturnDTO>> CreateOrderAsync(OrderDTO orderDTO, string Email)
         {
             //1- Order Address
-            var orderAddress = _mapper.Map<OrderAddressDTO, OrderAddress>(orderDTO.Address);
+            var orderAddress = _mapper.Map<OrderAddressDTO, OrderAddress>(orderDTO.ShipToAddress);
             //2- Basket
             var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId);
             if (basket is null)
@@ -42,6 +42,11 @@ namespace ECommerce.Service
                     ("Basket.NotFound",
                     $"The basket with id: {orderDTO.BasketId} is not found");
             
+            if(basket.PaymentIntentId is null)
+                return Error.Validation
+                    ("Basket.PaymentIntentId.Null",
+                    $"The basket with id: {orderDTO.BasketId} has no payment intent id");
+
             List<OrderItem> orderItems = new List<OrderItem>();
             foreach(var items in basket.Items)
             {
@@ -64,13 +69,25 @@ namespace ECommerce.Service
                         , $"the Delivery with id :{orderDTO.DeliveryMethodId} is not found");
             //5- SubTotal
             var SubTotal = orderItems.Sum(x => x.Price * x.Quantity);
+
+            var OrderPaymentSpec=
+                new OrderWithPaymentIntentSpecification(basket.PaymentIntentId);
+
+            var OrderExistWithPaymentIntent=await _unitOfWork.GetRepository<Order,Guid>()
+                .GetByIdAsync(OrderPaymentSpec);
+
+            if(OrderExistWithPaymentIntent is not null)
+                _unitOfWork.GetRepository<Order, Guid>().Delete(OrderExistWithPaymentIntent);
+            
+
             //6- Create Order
             var order =new Order()
             {
                 UserEmail=Email,
                 Address=orderAddress,
                 DeliveryMethod=deliveryMethod,
-                SubTotal=SubTotal,
+                PaymentIntentId=basket.PaymentIntentId,
+                SubTotal =SubTotal,
                 Items=orderItems,
             };
             await _unitOfWork.GetRepository<Order, Guid>().AddAsync(order);
@@ -78,6 +95,7 @@ namespace ECommerce.Service
             if (!result)
                  Error.Failure("Order.Failure", "there was a problem when save changes");
             return _mapper.Map<OrderToReturnDTO>(order);
+
         }
 
         public async Task<Result<IEnumerable<DeliveryMethodDTO>>> GetAllDeliveryMethodAsync()

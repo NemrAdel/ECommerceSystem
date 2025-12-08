@@ -10,11 +10,10 @@ namespace ECommerce.Doamin.Entities.BasketModule
     {
         public string Id { get; set; } = default!; // Created from frontEnd [GUID]
 
-        public int? DelviryMethodId { get; set; }
-        public decimal? ShippingPrice { get; set; }
-        public string? PaymentIntentID { get; set; }
+        public int? DeliveryMethodId { get; set; }
+        public decimal ShippingPrice { get; set; }
+        public string? PaymentIntentId { get; set; }
         public string? ClientSecret { get; set; }
-
         public ICollection<BasketItem> Items { get; set; } =[];
     }
 }
