@@ -1,6 +1,7 @@
 ﻿using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.BasketDTOs;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace ECommerce.Presentation.Controllers
 {
@@ -18,5 +19,15 @@ namespace ECommerce.Presentation.Controllers
             var Result=await _paymentService.CreateOrUpdatePaymentIntentAsync(BasketId);
             return HandleResult(Result);
         }
+
+        [HttpPost("weebhook")]
+        public async Task<IActionResult> WebHook()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var stripeSignature=Request.Headers["Stripe-Signature"];
+            await _paymentService.UpdateOrderPaymentStatus(json, stripeSignature!);
+            return new EmptyResult();
+        }
+        
     }
 }
