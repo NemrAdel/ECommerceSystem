@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Doamin.Entities.OrderModule;
+using ECommerce.Service.Specifications.OrrderSpecifications;
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared.CommonRespones;
 using ECommerce.Shared.DTOs.BasketDTOs;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using Stripe.Forwarding;
 using Product = ECommerce.Doamin.Entities.ProductModule.Product;
 
 namespace ECommerce.Service
@@ -91,6 +93,36 @@ namespace ECommerce.Service
             await _basketRepository.CreateOrUpdateBasketAsync(Basket);
 
             return _mapper.Map<BasketDTO>(Basket);
+        }
+
+        public async Task UpdateOrderPaymentStatus(string request, string stripeSignature)
+        {
+            var endpointSecret = _configuration["Stripe:EndpointSecret"];
+            var stripeEvent = EventUtility.ConstructEvent(request,
+                    stripeSignature, endpointSecret);
+
+            // Handle the event
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            var order = await _unitOfWork.GetRepository<Order, Guid>()
+                .GetByIdAsync(new OrderWithPaymentIntentSpecification(paymentIntent!.Id));
+            if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
+            {    
+                order!.Status = OrderStatus.PaymentReceived; 
+                _unitOfWork.GetRepository<Order, Guid>().Update(order);
+                await _unitOfWork.saveChangesAsync();
+            }
+
+            else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
+            {
+                order!.Status = OrderStatus.PaymentFailed;
+                _unitOfWork.GetRepository<Order, Guid>().Update(order);
+                await _unitOfWork.saveChangesAsync();
+            }
+            // ... handle other event types
+            else
+            {
+                Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+            }
         }
     }
 }
