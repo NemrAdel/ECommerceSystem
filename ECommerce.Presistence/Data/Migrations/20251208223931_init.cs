@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ECommerce.Presistence.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ProductAndOrderModule : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,7 +61,8 @@ namespace ECommerce.Presistence.Data.Migrations
                     UserEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    Address_FirsName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PaymentIntentId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address_FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address_LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address_City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address_Street = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
