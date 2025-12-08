@@ -13,6 +13,7 @@ namespace ECommerce.Shared.DTOs.OderDTOs
         public ICollection<OrderItemDTO> Items { get; set; }
         public OrderAddressDTO Address { get; set; }
         public string DeliveryMethod { get; set; }
+        public string PaymentintentId { get; set; }
         public string Status { get; set; }
         public DateTimeOffset OrderDate { get; set; }
         public decimal Total { get; set; }

@@ -34,7 +34,7 @@ namespace ECommerce.Service
         public async Task<Result<OrderToReturnDTO>> CreateOrderAsync(OrderDTO orderDTO, string Email)
         {
             //1- Order Address
-            var orderAddress = _mapper.Map<OrderAddressDTO, OrderAddress>(orderDTO.Address);
+            var orderAddress = _mapper.Map<OrderAddressDTO, OrderAddress>(orderDTO.ShipToAddress);
             //2- Basket
             var basket = await _basketRepository.GetBasketAsync(orderDTO.BasketId);
             if (basket is null)
