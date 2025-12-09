@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Shared.DTOs.IdentityDTOs
 {
-    public record UserDTO(string Email,string DiplayName,string Token)
+    public record UserDTO(string Email,string DisplayName,string Token)
     {
         
     }
