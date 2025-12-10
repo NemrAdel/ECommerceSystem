@@ -33,21 +33,41 @@ namespace AdminDashboard.Controllers
             return View(users);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             var roles = await _roleManager.Roles.ToListAsync();
-            var userModel=new UserRoleViewModel
+            var userModel = new UserRoleViewModel
             {
                 UserId = user.Id,
                 UserName = user.UserName,
-                Roles = roles.Select(role => new UpdateRoleViewModel
+                Roles = roles.Select(r => new UpdateRoleViewModel
                 {
-                    UserId = role.Id,
-                    Name = role.Name!,
-                    IsSelected = _userManager.IsInRoleAsync(user, role.Name!).Result
+                    Id = r.Id,
+                    Name = r.Name!,
+                    IsSelected= _userManager.IsInRoleAsync(user, r.Name!).Result
                 }).ToList()
             };
+            return View(userModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            var roles = await _roleManager.Roles.ToListAsync();
+            var userModel = new UserRoleViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Roles = roles.Select(r => new UpdateRoleViewModel
+                {
+                    Id = r.Id,
+                    Name = r.Name!,
+                    IsSelected= _userManager.IsInRoleAsync(user, r.Name!).Result
+                }).ToList()
+            };
+            return View(userModel);
         }
     }
 }
