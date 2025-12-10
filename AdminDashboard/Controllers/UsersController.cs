@@ -52,22 +52,23 @@ namespace AdminDashboard.Controllers
             return View(userModel);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(UserRoleViewModel model)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            var roles = await _roleManager.Roles.ToListAsync();
-            var userModel = new UserRoleViewModel
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            var rolesForUser = await _userManager.GetRolesAsync(user!);
+            foreach(var role in model.Roles)
             {
-                UserId = user.Id,
-                UserName = user.UserName,
-                Roles = roles.Select(r => new UpdateRoleViewModel
+                if (rolesForUser.Any(r => r == role.Name) && !role.IsSelected)
                 {
-                    Id = r.Id,
-                    Name = r.Name!,
-                    IsSelected= _userManager.IsInRoleAsync(user, r.Name!).Result
-                }).ToList()
-            };
-            return View(userModel);
+                    await _userManager.RemoveFromRoleAsync(user!, role.Name);
+                }
+                if (!rolesForUser.Any(r => r == role.Name) && role.IsSelected)
+                {
+                    await _userManager.AddToRoleAsync(user!, role.Name);
+                }
+
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }
