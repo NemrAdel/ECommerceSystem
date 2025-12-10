@@ -1,6 +1,5 @@
 ﻿using AdminDashboard.Models.Roles;
 using AdminDashboard.Models.Users;
-using AdminDashboard.Views.Users;
 using ECommerce.Doamin.Entities.IdentityModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
