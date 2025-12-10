@@ -4,19 +4,16 @@ using ECommerce.Presistence.Data.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace ECommerce.Presistence.Migrations
+namespace ECommerce.Presistence.Data.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20251208221429_init")]
-    partial class init
+    partial class StoreDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
