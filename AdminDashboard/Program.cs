@@ -1,6 +1,8 @@
+using ECommerce.Doamin.Contracts;
 using ECommerce.Doamin.Entities.IdentityModule;
 using ECommerce.Presistence.Data.DbContexts;
 using ECommerce.Presistence.IdentityData.DbContext;
+using ECommerce.Presistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +31,9 @@ namespace AdminDashboard
             builder.Services.AddIdentity<ApplicationUser,IdentityRole>()
                 .AddEntityFrameworkStores<StoreIdentityDbContext>()
                 .AddDefaultTokenProviders();
+
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
