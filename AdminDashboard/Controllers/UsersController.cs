@@ -28,7 +28,6 @@ namespace AdminDashboard.Controllers
                 UserName = user.UserName,
                 Roles = _userManager.GetRolesAsync(user).Result
             }).ToListAsync();
-
             return View(users);
         }
 
