@@ -24,7 +24,7 @@ namespace AdminDashboard.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
-            var user = await  _userManager.FindByNameAsync(loginDTO.Email);
+            var user = await  _userManager.FindByEmailAsync(loginDTO.Email);
             if (user == null) 
             {
                 ModelState.AddModelError("", "Invalid login attempt.");

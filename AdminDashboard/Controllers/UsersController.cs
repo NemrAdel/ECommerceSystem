@@ -20,7 +20,7 @@ namespace AdminDashboard.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var users = _userManager.Users.Select(user => new UserViewModel
+            var users =await _userManager.Users.Select(user => new UserViewModel
             {
                 Id = user.Id,
                 DisplayName = user.DisplayName,
