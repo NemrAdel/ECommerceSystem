@@ -11,5 +11,9 @@ namespace ECommerce.Doamin.Entities.IdentityModule
     {
         public string DisplayName { get; set; } = default!;
         public Address? Address { get; set; }
+        public string? OTP { get; set; }
+        public DateTime? OTPExpireDate { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
     }
 }
