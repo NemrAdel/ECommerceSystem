@@ -20,7 +20,7 @@ namespace ECommerce.Presentation.Controllers
             return HandleResult(Result);
         }
 
-        [HttpPost("weebhook")]
+        [HttpPost("webhook")]
         public async Task<IActionResult> WebHook()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();

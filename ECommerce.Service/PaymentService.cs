@@ -72,7 +72,7 @@ namespace ECommerce.Service
 
                 var options=new PaymentIntentCreateOptions
                 {
-                    Amount = Amount ,
+                    Amount = Amount + (long)Basket.ShippingPrice ,
                     Currency = "USD",
                     PaymentMethodTypes = ["card"]
                 };
@@ -84,7 +84,7 @@ namespace ECommerce.Service
             {
                 var options = new PaymentIntentUpdateOptions
                 {
-                    Amount = Amount
+                    Amount = Amount +(long)Basket.ShippingPrice
                 };
                 await stripeService.UpdateAsync(Basket.PaymentIntentId,options);
             }

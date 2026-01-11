@@ -51,13 +51,13 @@ namespace ECommerce.Presistence.IdentityData.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Addresses", (string)null);
                 });
@@ -99,6 +99,12 @@ namespace ECommerce.Presistence.IdentityData.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("OTP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("OTPExpireDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -113,6 +119,9 @@ namespace ECommerce.Presistence.IdentityData.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -268,9 +277,7 @@ namespace ECommerce.Presistence.IdentityData.Migrations
                 {
                     b.HasOne("ECommerce.Doamin.Entities.IdentityModule.ApplicationUser", "User")
                         .WithOne("Address")
-                        .HasForeignKey("ECommerce.Doamin.Entities.IdentityModule.Address", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ECommerce.Doamin.Entities.IdentityModule.Address", "UserId");
 
                     b.Navigation("User");
                 });
@@ -328,8 +335,7 @@ namespace ECommerce.Presistence.IdentityData.Migrations
 
             modelBuilder.Entity("ECommerce.Doamin.Entities.IdentityModule.ApplicationUser", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
                 });
 #pragma warning restore 612, 618
         }

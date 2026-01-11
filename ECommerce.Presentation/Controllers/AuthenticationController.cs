@@ -72,6 +72,21 @@ namespace ECommerce.Presentation.Controllers
             var Result = await _authenticationService.UpdateAddress(eamil,addressToUpdate);
             return HandleResult(Result);
         }
+        [Authorize]
+        [HttpPost("forgetpassword")]
+        public async Task<ActionResult<bool>> ForgetPassword([FromBody] string email)
+        {
+            var Result = await _authenticationService.ForgetPassword(email);
+            return HandleResult(Result);
+        }
+        [Authorize]
+        [HttpPost("resetpassword")]
+        public async Task<ActionResult<bool>> ResetPassword([FromBody] ResetPasswordParams resetPassword)
+        {
+            var Usereamil = GetEmailFromToken();
+            var Result = await _authenticationService.ResetPassword(Usereamil,resetPassword.OTP,resetPassword.Password);
+            return HandleResult(Result);
+        }
 
 
     }

@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace ECommerce.Service.Specifications.ProductSpecifications
 {
-    internal class ProductWithTypeAndBrandSpec:BaseSpecifications<Product,int>
+    public class ProductWithTypeAndBrandSpec:BaseSpecifications<Product,int>
     {
         //1- brandId is not null && p=>p.BrandID=brandId
         //2- typeId is not null && p=>p.typeID=typeId
         //3- the two together
-        public ProductWithTypeAndBrandSpec(ProductQueryParams queryParams)
+        public ProductWithTypeAndBrandSpec(ProductQueryParams queryParams , bool forDashboard = false)
             :base( ProductSpecificationsHelper.GetCriteria(queryParams))
         
         {
@@ -39,8 +39,8 @@ namespace ECommerce.Service.Specifications.ProductSpecifications
                     AddOrderBy(p => p.Id);
                     break;
             }
-
-            ApplyPagination(queryParams.PageSize, queryParams.PageIndex);
+            if(!forDashboard)
+                ApplyPagination(queryParams.PageSize, queryParams.PageIndex);
         }
         public ProductWithTypeAndBrandSpec(int id):base(x=>x.Id==id)
         {

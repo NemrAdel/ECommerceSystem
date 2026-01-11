@@ -3,6 +3,7 @@ using ECommerce.Api.Extensions;
 using ECommerce.Api.Factories;
 using ECommerce.Doamin.Contracts;
 using ECommerce.Doamin.Entities.IdentityModule;
+using ECommerce.Presistence;
 using ECommerce.Presistence.Data.DataSeed;
 using ECommerce.Presistence.Data.DbContexts;
 using ECommerce.Presistence.IdentityData.DataSeed;
@@ -100,6 +101,7 @@ namespace ECommerce.Api
             builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
             builder.Services.AddScoped<IOrderService,OrderService>();
             builder.Services.AddScoped<ISecurityRepository<Address>,SecurityRepository<Address>>();
+            builder.Services.AddScoped<IEmailService,EmailService>();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -124,14 +126,17 @@ namespace ECommerce.Api
             //.AddEntityFrameWorkStores<StoreIdentityDbContext>();//Take the user and role => we didn't modify role 
 
             builder.Services.AddIdentityCore<ApplicationUser>().AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<StoreIdentityDbContext>(); // light weight for user only and roles
+                .AddEntityFrameworkStores<StoreIdentityDbContext>()
+                .AddDefaultTokenProviders(); // light weight for user only and roles
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             options.InvalidModelStateResponseFactory = ApiResponseFactory.GenerateApiValidationResponse
             );
+
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             #endregion
 
-;           var PolicyName = "DevelopmentPolicy";
+            ;           var PolicyName = "DevelopmentPolicy";
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(PolicyName,
