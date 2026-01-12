@@ -4,10 +4,10 @@ using ECommerce.Doamin.Entities.OrderModule;
 using ECommerce.Service.Specifications.OrrderSpecifications;
 using ECommerce.Services.Abstraction;
 using ECommerce.Shared.CommonRespones;
+using ECommerce.Shared.DTOs;
 using ECommerce.Shared.DTOs.BasketDTOs;
 using Microsoft.Extensions.Configuration;
 using Stripe;
-using Stripe.Forwarding;
 using Product = ECommerce.Doamin.Entities.ProductModule.Product;
 
 namespace ECommerce.Service
@@ -18,18 +18,21 @@ namespace ECommerce.Service
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
         public PaymentService(
             IBasketRepository basketRepository,
             IUnitOfWork unitOfWork,
             IConfiguration configuration,
-            IMapper mapper
+            IMapper mapper,
+            IEmailService emailService
             )
         {
             _basketRepository = basketRepository;
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _mapper = mapper;
+            _emailService = emailService;
         }
         public async Task<Result<BasketDTO>> CreateOrUpdatePaymentIntentAsync(string BasketId)
         {
@@ -62,7 +65,6 @@ namespace ECommerce.Service
                 item.PictureUrl=Product.PictureUrl;
             }
             long Amount =(long)(Basket.Items.Sum(x => x.Price * x.Quantity) * 100); //must by cents
-
 
             var stripeService=new PaymentIntentService();
 
@@ -110,6 +112,22 @@ namespace ECommerce.Service
                 order!.Status = OrderStatus.PaymentReceived; 
                 _unitOfWork.GetRepository<Order, Guid>().Update(order);
                 await _unitOfWork.saveChangesAsync();
+                var emailDTO = new EmailDTO
+                {
+                    To = order.UserEmail,
+                    Subject = "Payment Succeeded ⚡✅",
+                    Body = $"Your payment for order {order.Id} has been received successfully. \n" +
+                    $"• Your Order Date : {order.OrderDate} \n" +
+                    $"• Your Orders Is : {order.Items}" +
+                    $"• Total Amount Paid : {order.SubTotal + order.DeliveryMethod.Price} USD \n" +
+                    $"• The Order Goes To : {order.Address}" +
+                    $"• Your Delivery Is : {order.DeliveryMethod}" +
+                    $"Thank you for shopping with us! \n" +
+                    $"Best regards, \n" +
+                    $"Talabat Team ⚡🍔🍕"
+                };
+
+                await _emailService.SendEmailAsync(emailDTO);
             }
 
             else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
