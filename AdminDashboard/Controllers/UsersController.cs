@@ -4,7 +4,6 @@ using ECommerce.Doamin.Entities.IdentityModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace AdminDashboard.Controllers
 {
@@ -24,8 +23,8 @@ namespace AdminDashboard.Controllers
             {
                 Id = user.Id,
                 DisplayName = user.DisplayName,
-                Email = user.Email,
-                UserName = user.UserName,
+                Email = user.Email!,
+                UserName = user.UserName!,
                 Roles = _userManager.GetRolesAsync(user).Result
             }).ToListAsync();
             return View(users);

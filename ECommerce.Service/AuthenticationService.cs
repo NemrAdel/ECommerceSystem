@@ -65,11 +65,11 @@ namespace ECommerce.Service
                 DisplayName = registerDTO.DisplayName,
                 PhoneNumber = registerDTO.PhoneNumber,
                 UserName = registerDTO.UserName,
-                
             };
-            var IdentityResult = await _userManager.CreateAsync(user, registerDTO.Password);
+            var IdentityResult = await _userManager.CreateAsync(user, registerDTO.Password); 
             if (IdentityResult.Succeeded)
             {
+                var role = await _userManager.AddToRoleAsync(user,"Client");
                 var emailDto = new EmailDTO
                 {
                     To = registerDTO.Email,
