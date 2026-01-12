@@ -107,21 +107,33 @@ namespace ECommerce.Service
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
             var order = await _unitOfWork.GetRepository<Order, Guid>()
                 .GetByIdAsync(new OrderWithPaymentIntentSpecification(paymentIntent!.Id));
+
+
+            
             if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
             {    
+                var deliveryMethod = await _unitOfWork.GetRepository<DeliveryMethod, int>().
+                    GetByIdAsync(order!.DeliveryMethodId);
                 order!.Status = OrderStatus.PaymentReceived; 
                 _unitOfWork.GetRepository<Order, Guid>().Update(order);
                 await _unitOfWork.saveChangesAsync();
+
+                var orderItems = string.Join("\n", order.Items.Select(item =>
+                $" - {item.Name} * {item.Quantity} = {item.Price * item.Quantity}"));
                 var emailDTO = new EmailDTO
                 {
+                    
                     To = order.UserEmail,
                     Subject = "Payment Succeeded ⚡✅",
-                    Body = $"Your payment for order {order.Id} has been received successfully. \n" +
-                    $"• Your Order Date : {order.OrderDate} \n" +
-                    $"• Your Orders Is : {order.Items}" +
+                    Body = $"Your payment for order ( {order.Id} ) has been received successfully. \n\n" +
+                    $"• Order Date : {order.OrderDate : yyyy:MM:dd :hh:mm} \n" +
+                    $"• Order Items : {orderItems} \n" +
+                    $"• Delivery Price : {deliveryMethod!.Price} \n" +
                     $"• Total Amount Paid : {order.SubTotal + order.DeliveryMethod.Price} USD \n" +
-                    $"• The Order Goes To : {order.Address}" +
-                    $"• Your Delivery Is : {order.DeliveryMethod}" +
+                    $"• Order Location : {order.Address.FirstName} {order.Address.LastName} \n" +
+                    $"    - {order.Address.Street} - {order.Address.City} - {order.Address.Country} \n" +
+                    $"• Delivery Time : {deliveryMethod.DeliveryTime} \n" +
+                    $"• Delivery Description : {deliveryMethod.Description} \n" +
                     $"Thank you for shopping with us! \n" +
                     $"Best regards, \n" +
                     $"Talabat Team ⚡🍔🍕"
