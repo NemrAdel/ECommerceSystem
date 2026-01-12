@@ -37,8 +37,8 @@ namespace AdminDashboard.Controllers
             var roles = await _roleManager.Roles.ToListAsync();
             var userModel = new UserRoleViewModel
             {
-                UserId = user.Id,
-                UserName = user.UserName,
+                UserId = user!.Id,
+                UserName = user.UserName!,
                 Roles = roles.Select(r => new UpdateRoleViewModel
                 {
                     Id = r.Id,

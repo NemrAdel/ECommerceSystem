@@ -1,10 +1,8 @@
 ﻿using ECommerce.Doamin.Contracts;
 using ECommerce.Doamin.Entities.ProductModule;
-using ECommerce.Presistence.Data.DbContexts;
 using Microsoft.AspNetCore.Mvc;
 using ECommerce.Service.Specifications.ProductSpecifications;
 using ECommerce.Shared;
-using System.Threading.Tasks;
 using AdminDashboard.Models;
 using AdminDashboard.Helpers;
 
@@ -70,6 +68,12 @@ namespace AdminDashboard.Controllers
                 return RedirectToAction("Index");
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Edit()
+        {
+            return View();
         }
     }
 }
