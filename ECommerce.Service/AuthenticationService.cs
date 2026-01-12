@@ -6,18 +6,14 @@ using ECommerce.Shared.CommonRespones;
 using ECommerce.Shared.DTOs;
 using ECommerce.Shared.DTOs.IdentityDTOs;
 using ECommerce.Shared.DTOs.SecurityDTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ECommerce.Service
 {
@@ -69,43 +65,31 @@ namespace ECommerce.Service
                 DisplayName = registerDTO.DisplayName,
                 PhoneNumber = registerDTO.PhoneNumber,
                 UserName = registerDTO.UserName,
-                
             };
-            var IdentityResult = await _userManager.CreateAsync(user, registerDTO.Password);
+            var IdentityResult = await _userManager.CreateAsync(user, registerDTO.Password); 
             if (IdentityResult.Succeeded)
             {
+                var role = await _userManager.AddToRoleAsync(user,"Client");
+                var emailDto = new EmailDTO
+                {
+                    To = registerDTO.Email,
+                    Subject = "Welcome to Talabat! 🎉🍽️",
+                    Body = "Dear " + registerDTO.DisplayName + ",\n\n" +
+                    "Thank you for registering with Talabat. We're excited to have you on board! 🍔🍕\n\n" +
+                    "Explore our wide range of delicious meals and enjoy exclusive offers just for you. 🍽️💰\n\n" +
+                    "If you have any questions or need assistance, feel free to reach out to our support team. We're here to help! 🤝\n\n" +
+                    "Happy dining!\n\n" +
+                    "Best Regards,\n" +
+                    "Talabat Team ⚡"
+                };
+                await _emailService.SendEmailAsync(emailDto);
                 var token = await CreateTokenAsync(user);
                 return new UserDTO(user.Email, user.DisplayName, token);
             }
             return IdentityResult.Errors.Select(e => Error.Validation(e.Code, e.Description)).ToList();
         }
 
-        private async Task<string> CreateTokenAsync(ApplicationUser user)
-        {
-            var claims = new List<Claim>()
-            {
-                new Claim(JwtRegisteredClaimNames.Email,user.Email!),// instead of "Email" for confirm name
-                new Claim(JwtRegisteredClaimNames.Name,user.UserName!),
-            };
-            var roles = await _userManager.GetRolesAsync(user);
-            foreach(var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-            var secretKey = _configuration["JWTOptions:SecretKey"]!;
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var cred = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);// use symetric key to encrypt and decrypt the key in the same server 
-            var token =new JwtSecurityToken                                                                     //var token = new JwtSecurityToken
-            (
-                issuer: _configuration["JWTOptions:Issuer"],
-                audience: _configuration["JWTOptions:Audience"],
-                expires: DateTime.UtcNow.AddHours(1),
-                claims:claims,
-                signingCredentials:cred
-
-            );
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        
 
         public async Task<bool> CheckEmailAsync(string email)
         {
@@ -147,13 +131,25 @@ namespace ECommerce.Service
                 user.Address.Street = addressToUpdate.Street;
                 user.Address.FirstName = addressToUpdate.FirstName;
                 user.Address.LastName = addressToUpdate.LastName;    
-                //user.Address.UpdateAt = DateTime.Now;
+                user.Address.UpdateAt = DateTime.Now;
             }
             else // create new address
             {
                 user.Address=_mapper.Map<Address>(addressToUpdate);
             }
-
+            var emailDto = new EmailDTO
+            {
+                To = email,
+                Subject = "Address Updated Successfully! 🏠✅",
+                Body = "Dear " + user.DisplayName + ",\n\n" +
+                "Your address has been updated successfully in our system. 📬🏡\n\n" +
+                "If you did not make this change, please contact our support team immediately. We're here to help! 🤝\n\n" +
+                 $"Your Address Now is  \n" +
+                 $"{addressToUpdate.Street} - {addressToUpdate.City} - {addressToUpdate.Country} \n" +
+                "Best Regards,\n" +
+                "Talabat Team ⚡"
+            };
+            await _emailService.SendEmailAsync(emailDto);
             var result=await _userManager.UpdateAsync(user);
             return _mapper.Map<AddressDTO>(user.Address);
         }
@@ -240,6 +236,33 @@ namespace ECommerce.Service
             {
                 return Error.Failure("Server Error", ex.Message);
             }
+        }
+
+        private async Task<string> CreateTokenAsync(ApplicationUser user)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Email,user.Email!),// instead of "Email" for confirm name
+                new Claim(JwtRegisteredClaimNames.Name,user.UserName!),
+            };
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            var secretKey = _configuration["JWTOptions:SecretKey"]!;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);// use symetric key to encrypt and decrypt the key in the same server 
+            var token = new JwtSecurityToken                                                                     //var token = new JwtSecurityToken
+            (
+                issuer: _configuration["JWTOptions:Issuer"],
+                audience: _configuration["JWTOptions:Audience"],
+                expires: DateTime.UtcNow.AddHours(1),
+                claims: claims,
+                signingCredentials: cred
+
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

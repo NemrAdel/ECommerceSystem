@@ -1,16 +1,11 @@
-﻿using ECommerce.Doamin.Entities.IdentityModule;
-using ECommerce.Services.Abstraction;
+﻿using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.IdentityDTOs;
 using ECommerce.Shared.DTOs.SecurityDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ECommerce.Presentation.Controllers
 {
@@ -65,8 +60,9 @@ namespace ECommerce.Presentation.Controllers
         [ProducesResponseType<AddressDTO>(StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+        [Authorize]
         [HttpPut("Address")]
-        public async Task<ActionResult<AddressDTO>> UpdateAddress(AddressDTO addressToUpdate)
+        public async Task<ActionResult<AddressDTO>> UpdateAddress([FromBody] AddressDTO addressToUpdate)
         {
             var eamil = GetEmailFromToken();
             var Result = await _authenticationService.UpdateAddress(eamil,addressToUpdate);

@@ -2,12 +2,8 @@
 using ECommerce.Shared.DTOs.OderDTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ECommerce.Presentation.Controllers
 {
@@ -21,7 +17,7 @@ namespace ECommerce.Presentation.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<OrderToReturnDTO>> CreateOrder(OrderDTO orderDTO)
+        public async Task<ActionResult<OrderToReturnDTO>> CreateOrder([FromBody] OrderDTO orderDTO)
         {
             var email = User.FindFirstValue(ClaimTypes.Email);
             var result = await _orderService.CreateOrderAsync(orderDTO, email!);

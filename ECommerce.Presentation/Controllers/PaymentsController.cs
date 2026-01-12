@@ -1,7 +1,6 @@
 ﻿using ECommerce.Services.Abstraction;
 using ECommerce.Shared.DTOs.BasketDTOs;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
 
 namespace ECommerce.Presentation.Controllers
 {
